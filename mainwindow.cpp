@@ -5,9 +5,8 @@
 #include <QHBoxLayout>
 #include <qdebug>
 
-//#include <math.h>
-
 #include <QtWidgets>
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -17,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     View *view = new View("Start simulation:");
-    //view->view()->setScene(m_scene);
     view->view()->setCacheMode(QGraphicsView::CacheBackground);
     view->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     view->view()->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -30,9 +28,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle(tr("Farm simulator"));
 
+
+
     timer = new QTimer;
     QObject::connect(timer, SIGNAL(timeout()), view, SLOT(onTimer()));
-    timer->start(1000 / 33);
+
+
+    timer->start(3000);
 
 }
 

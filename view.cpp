@@ -6,6 +6,8 @@
 #include "animal.h"
 #include "sqmeter.h"
 
+#include "crain.h"
+
 #ifndef QT_NO_WHEELEVENT
 void GraphicsView::wheelEvent(QWheelEvent *e)
 {
@@ -145,6 +147,8 @@ View::View(const QString &name, QWidget *parent)
     connect(startSimButton, SIGNAL(pressed()), this, SLOT(onStartSimButtonPressed()));
     connect(startSimButton, SIGNAL(released()), this, SLOT(onStartSimButtonReleased()));
 
+    m_rain = new CRain();
+
 
 
     setupMatrix();
@@ -248,23 +252,10 @@ void View::populateScene(int squareMeters)
 
     getSides(squareMeters, westSide, northSide, resto);
 
-    qDebug() << westSide << "and: " << northSide << "resto: " << resto;
+    //qDebug() << westSide << "and: " << northSide << "resto: " << resto;
 
     m_scene = new QGraphicsScene;
 
-    m_scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-
-    for (int a = 0; a < 10; ++a) {
-        Animal *animal = new Animal;
-        animal->setPos(::sin((a * 6.28) / 10) * 200,
-                      ::cos((a * 6.28) / 10) * 200);
-        m_scene->addItem(animal);
-    }
-
-
- //   int northSide = 10;
- //   int westSide = squareMeters / northSide;
- //   int resto = squareMeters % northSide;
 
     int xx=0;
     QColor color(55,130,55);
@@ -290,12 +281,22 @@ void View::populateScene(int squareMeters)
     }
 
 
+
+    for (int a = 0; a < 10; ++a) {
+        Animal *animal = new Animal(a);
+        animal->setPos(::sin((a * 6.28) / 10) * 200,
+                      ::cos((a * 6.28) / 10) * 200);
+        m_scene->addItem(animal);
+        connect(m_rain, SIGNAL(raining()), animal, SLOT(onRain()));
+    }
 }
 
 void View::onTimer()
 {
     if(m_scene)
         emit m_scene->advance();
+
+    emit m_rain->raining();
 }
 
 void View::onStartSimButtonPressed()

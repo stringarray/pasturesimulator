@@ -43,7 +43,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QStyleOption>
-
+#include <QDebug>
 #include <math.h>
 
 static const double Pi = 3.14159265358979323846264338327950288419717;
@@ -58,36 +58,36 @@ static qreal normalizeAngle(qreal angle)
     return angle;
 }
 
-//! [0]
-Animal::Animal()
+
+Animal::Animal(int id)
     : angle(0), speed(0), AnimalEyeDirection(0),
       color(qrand() % 256, qrand() % 256, qrand() % 256)
 {
     setRotation(qrand() % (360 * 16));
     setZValue(1);
     setFlags( ItemIsMovable);
+    this->m_id = id;
 }
-//! [0]
 
-//! [1]
+
+
 QRectF Animal::boundingRect() const
 {
     qreal adjust = 0.5;
     return QRectF(-18 - adjust, -22 - adjust,
                   36 + adjust, 60 + adjust);
 }
-//! [1]
 
-//! [2]
+
+
 QPainterPath Animal::shape() const
 {
     QPainterPath path;
     path.addRect(-10, -40, 35, 40);
     return path;
 }
-//! [2]
 
-//! [3]
+
 void Animal::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     // Body
@@ -131,16 +131,14 @@ void Animal::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
 //    painter->drawPath(path);
 
 }
-//! [3]
 
-//! [4]
 void Animal::advance(int step)
 {
     if (!step)
         return;
-//! [4]
+
     // Don't move too far away
-//! [5]
+
     QLineF lineToCenter(QPointF(0, 0), mapFromScene(0, 0));
     if (lineToCenter.length() > 150) {
         qreal angleToCenter = ::acos(lineToCenter.dx() / lineToCenter.length());
@@ -159,12 +157,12 @@ void Animal::advance(int step)
         angle += 0.25;
     } else if (::sin(angle) > 0) {
         angle -= 0.25;
-//! [5] //! [6]
+
     }
-//! [6]
+
 
     // Try not to crash with any other mice
-//! [7]
+
     QList<QGraphicsItem *> dangerMice = scene()->items(QPolygonF()
                                                        << mapToScene(0, 0)
                                                        << mapToScene(-30, -50)
@@ -185,23 +183,21 @@ void Animal::advance(int step)
         } else if (angleToAnimal <= TwoPi && angleToAnimal > (TwoPi - Pi / 2)) {
             // Rotate left
             angle -= 0.5;
-//! [7] //! [8]
+
         }
-//! [8] //! [9]
+
     }
-//! [9]
+
 
     // Add some random movement
-//! [10]
+
     if (dangerMice.size() > 1 && (qrand() % 10) == 0) {
         if (qrand() % 1)
             angle += (qrand() % 100) / 500.0;
         else
             angle -= (qrand() % 100) / 500.0;
     }
-//! [10]
 
-//! [11]
     speed += (-50 + qrand() % 100) / 100.0;
 
     qreal dx = ::sin(angle) * 10;
@@ -210,4 +206,9 @@ void Animal::advance(int step)
     setRotation(rotation() + dx);
     setPos(mapToParent(0, -(3 + sin(speed) * 3)));
 }
-//! [11]
+
+
+void Animal::onRain()
+{
+    qDebug() << "slot on rain triggered on animal: " << m_id;
+}

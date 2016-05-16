@@ -19,8 +19,6 @@ public:
 public slots:
 
 private:
-     void setupMatrix();
-     void populateScene(int squareMeters);
 
      int m_squareMeters;
      QTimer *timer;

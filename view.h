@@ -3,6 +3,8 @@
 
 #include <QFrame>
 #include <QGraphicsView>
+#include "crain.h"
+
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -68,6 +70,8 @@ private:
     QSlider *m_zoomSlider;
     QSlider *rotateSlider;
     QGraphicsScene *m_scene;
+
+    CRain *m_rain;
 };
 
 #endif // VIEW_H

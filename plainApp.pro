@@ -5,7 +5,8 @@ SOURCES += main.cpp \
     view.cpp \
     sqmeter.cpp \
     animal.cpp \
-    dialogstart.cpp
+    dialogstart.cpp \
+    crain.cpp
 
 RESOURCES += \
     resources.qrc
@@ -15,7 +16,8 @@ HEADERS += \
     view.h \
     sqmeter.h \
     animal.h \
-    dialogstart.h
+    dialogstart.h \
+    crain.h
 
 FORMS += \
     dialogstart.ui

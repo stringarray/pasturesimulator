@@ -44,24 +44,27 @@
 #include <QGraphicsItem>
 
 //! [0]
-class Animal : public QGraphicsItem
+class Animal : public QObject, public QGraphicsItem
 {
+    Q_OBJECT
 public:
-    Animal();
+    Animal(int id);
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     QPainterPath shape() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget) Q_DECL_OVERRIDE;
-
+public slots:
+    void onRain();
 protected:
     void advance(int step) Q_DECL_OVERRIDE;
-
+    int m_id;
 private:
     qreal angle;
     qreal speed;
     qreal AnimalEyeDirection;
     QColor color;
+
 };
 //! [0]
 
