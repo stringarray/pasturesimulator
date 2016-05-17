@@ -45,6 +45,8 @@
 #include <QStyleOption>
 #include <QDebug>
 #include <math.h>
+#include <QGraphicsObject>
+#include "sqmeter.h"
 
 static const double Pi = 3.14159265358979323846264338327950288419717;
 static double TwoPi = 2.0 * Pi;
@@ -61,11 +63,11 @@ static qreal normalizeAngle(qreal angle)
 
 Animal::Animal(int id)
     : angle(0), speed(0), AnimalEyeDirection(0),
-      color(qrand() % 256, qrand() % 256, qrand() % 256)
+      color(qrand() % 200, qrand() % 40, qrand() % 20)
 {
-    setRotation(qrand() % (360 * 16));
+    //setRotation(qrand() % (360 * 16));
     setZValue(1);
-    setFlags( ItemIsMovable);
+    setFlags( ItemIsMovable );
     this->m_id = id;
 }
 
@@ -94,35 +96,36 @@ void Animal::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     painter->setBrush(color);
     painter->drawEllipse(-15, -20, 26, 40);
 
-    // Eyes
-    painter->setBrush(Qt::white);
-    painter->drawEllipse(-10, -17, 8, 8);
-    painter->drawEllipse(2, -17, 8, 8);
+//    // Eyes
+//    painter->setBrush(Qt::white);
+//    painter->drawEllipse(-10, -17, 8, 8);
+//    painter->drawEllipse(2, -17, 8, 8);
 
-    // Nose
-    painter->setBrush(Qt::black);
-    painter->drawEllipse(QRectF(-2, -22, 4, 4));
+//    // Nose
+//    painter->setBrush(Qt::black);
+//    painter->drawEllipse(QRectF(-4, -22, 4, 4));
+//    painter->drawEllipse(QRectF(0, -22, 4, 4));
 
-    // Pupils
-    painter->drawEllipse(QRectF(-8.0 + AnimalEyeDirection, -17, 4, 4));
-    painter->drawEllipse(QRectF(4.0 + AnimalEyeDirection, -17, 4, 4));
+//    // Pupils
+//    painter->drawEllipse(QRectF(-8.0 + AnimalEyeDirection, -17, 4, 4));
+//    painter->drawEllipse(QRectF(4.0 + AnimalEyeDirection, -17, 4, 4));
 
-    // collision circle
-    painter->setBrush(scene()->collidingItems(this).isEmpty() ? Qt::darkYellow : Qt::red);
-    //painter->drawEllipse(-17, -12, 16, 16);
-    painter->drawEllipse(-8, -5, 16, 16);
+//    // collision circle
+//    painter->setBrush(scene()->collidingItems(this).isEmpty() ? Qt::darkYellow : Qt::red);
+//    //painter->drawEllipse(-17, -12, 16, 16);
+//    painter->drawEllipse(-8, -5, 16, 16);
 
-    QPainterPath horn1(QPointF(-5, -10));
-    QPainterPath horn2(QPointF(1, 0));
+//    QPainterPath horn1(QPointF(-5, -10));
+//    QPainterPath horn2(QPointF(1, 0));
 
-    horn1.cubicTo(-25, -25, -30, -30, -25, -25);
-    horn2.cubicTo(-1, 5, -5, 10, 0, 15);
+//    horn1.cubicTo(-25, -25, -30, -30, -25, -25);
+//    horn2.cubicTo(-1, 5, -5, 10, 0, 15);
 
-    painter->setBrush(Qt::NoBrush);
-    painter->drawPath(horn1);
-   // painter->drawPath(horn2);
+//    painter->setBrush(Qt::NoBrush);
+//    painter->drawPath(horn1);
+//   // painter->drawPath(horn2);
 
-    // Tail
+//    // Tail
 //    QPainterPath path(QPointF(0, 20));
 //    path.cubicTo(-5, 22, -5, 22, 0, 25);
 //    path.cubicTo(5, 27, 5, 32, 0, 30);
@@ -137,78 +140,44 @@ void Animal::advance(int step)
     if (!step)
         return;
 
-    // Don't move too far away
-
-    QLineF lineToCenter(QPointF(0, 0), mapFromScene(0, 0));
-    if (lineToCenter.length() > 150) {
-        qreal angleToCenter = ::acos(lineToCenter.dx() / lineToCenter.length());
-        if (lineToCenter.dy() < 0)
-            angleToCenter = TwoPi - angleToCenter;
-        angleToCenter = normalizeAngle((Pi - angleToCenter) + Pi / 2);
-
-        if (angleToCenter < Pi && angleToCenter > Pi / 4) {
-            // Rotate left
-            angle += (angle < -Pi / 2) ? 0.25 : -0.25;
-        } else if (angleToCenter >= Pi && angleToCenter < (Pi + Pi / 2 + Pi / 4)) {
-            // Rotate right
-            angle += (angle < Pi / 2) ? 0.25 : -0.25;
-        }
-    } else if (::sin(angle) < 0) {
-        angle += 0.25;
-    } else if (::sin(angle) > 0) {
-        angle -= 0.25;
-
-    }
-
-
-    // Try not to crash with any other mice
-
-    QList<QGraphicsItem *> dangerMice = scene()->items(QPolygonF()
-                                                       << mapToScene(0, 0)
-                                                       << mapToScene(-30, -50)
-                                                       << mapToScene(30, -50));
-    foreach (QGraphicsItem *item, dangerMice) {
+    QList<SqMeter *> metros;
+    QList<QGraphicsItem *> surrounding = scene()->items(QPolygonF() << mapToScene(-50, 50)
+                                                        << mapToScene(-50, -50)
+                                                        << mapToScene(50, -50)
+                                                        << mapToScene(50, 50));
+    int i = 0;
+    foreach (QGraphicsItem *item, surrounding) {
         if (item == this)
             continue;
 
-        QLineF lineToAnimal(QPointF(0, 0), mapFromItem(item, 0, 0));
-        qreal angleToAnimal = ::acos(lineToAnimal.dx() / lineToAnimal.length());
-        if (lineToAnimal.dy() < 0)
-            angleToAnimal = TwoPi - angleToAnimal;
-        angleToAnimal = normalizeAngle((Pi - angleToAnimal) + Pi / 2);
+       // qDebug() << "item: " << ++i << " x: " << item->pos().x() << " y: " << item->pos().y();
 
-        if (angleToAnimal >= 0 && angleToAnimal < Pi / 2) {
-            // Rotate right
-            angle += 0.5;
-        } else if (angleToAnimal <= TwoPi && angleToAnimal > (TwoPi - Pi / 2)) {
-            // Rotate left
-            angle -= 0.5;
+        SqMeter * meter = dynamic_cast<SqMeter*>(item);
+
+        if (meter != NULL)
+        {
+            metros << meter;
 
         }
-
     }
 
+    int nuevaPos = qrand() % metros.count();
+    qDebug() << "mover a : " << nuevaPos << " total: " << metros.count();
 
-    // Add some random movement
+    setPos(metros.at(nuevaPos)->pos().x()+25, metros.at(nuevaPos)->pos().y()+25 );
 
-    if (dangerMice.size() > 1 && (qrand() % 10) == 0) {
-        if (qrand() % 1)
-            angle += (qrand() % 100) / 500.0;
-        else
-            angle -= (qrand() % 100) / 500.0;
-    }
+    metros.at(nuevaPos)->consumeGrass();
 
-    speed += (-50 + qrand() % 100) / 100.0;
+    qDebug() << "fin items.";
 
-    qreal dx = ::sin(angle) * 10;
-    AnimalEyeDirection = (qAbs(dx / 5) < 1) ? 0 : dx / 5;
-
-    setRotation(rotation() + dx);
-    setPos(mapToParent(0, -(3 + sin(speed) * 3)));
+//scene()->addPolygon(QPolygonF() << mapToScene(-50, 50)
+//                                << mapToScene(-50, -50)
+//                                << mapToScene(50, -50)
+//                                << mapToScene(50, 50), QPen(QColor(255,0,0)));
 }
 
 
-void Animal::onRain()
+void Animal::onRain(int mm)
 {
-    qDebug() << "slot on rain triggered on animal: " << m_id;
+    //qDebug() << "slot on rain triggered on animal: " << m_id << "it rained: " << mm;
 }

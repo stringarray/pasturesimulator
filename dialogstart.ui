@@ -55,11 +55,34 @@
     <string>Cantidad de metros cuadrados:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="lineEditMetros">
    <property name="geometry">
     <rect>
      <x>200</x>
      <y>50</y>
+     <width>113</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>80</y>
+     <width>161</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cantidad de animales:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditAnimales">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>80</y>
      <width>113</width>
      <height>20</height>
     </rect>

@@ -55,7 +55,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget) Q_DECL_OVERRIDE;
 public slots:
-    void onRain();
+    void onRain(int mm);
 protected:
     void advance(int step) Q_DECL_OVERRIDE;
     int m_id;

@@ -7,7 +7,7 @@ DialogStart::DialogStart(QWidget *parent) :
     ui(new Ui::DialogStart)
 {
     ui->setupUi(this);
-    ui->lineEdit->setValidator(new QIntValidator(100, 50000, this));
+    ui->lineEditMetros->setValidator(new QIntValidator(100, 50000, this));
 }
 
 DialogStart::~DialogStart()
@@ -17,5 +17,6 @@ DialogStart::~DialogStart()
 
 void DialogStart::on_buttonBox_clicked(QAbstractButton *button)
 {
-    m_squareMeters = ui->lineEdit->text().toInt();
+    m_squareMeters = ui->lineEditMetros->text().toInt();
+    m_animals = ui->lineEditAnimales->text().toInt();
 }

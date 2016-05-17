@@ -266,29 +266,48 @@ void View::populateScene(int squareMeters)
         for (int j = 0; j < northSide; j++)
         {
             ++yy;
-            QGraphicsItem *item = new SqMeter(color, xx, yy);
+            SqMeter *item = new SqMeter(color, xx, yy);
             item->setPos(QPointF(j*50, i*50));
+            item->m_pesoPasto = 14;
             m_scene->addItem(item);
+            connect(m_rain, SIGNAL(raining(int)), item, SLOT(onRain(int)));
         }
 
     }
 
     for (int k = 0; k < resto; k++)
     {
-        QGraphicsItem *item = new SqMeter(color, k, westSide+1);
+        SqMeter *item = new SqMeter(color, k, westSide+1);
         item->setPos(QPointF(k*50, westSide*50));
+        item->m_pesoPasto = 14;
         m_scene->addItem(item);
+        connect(m_rain, SIGNAL(raining(int)), item, SLOT(onRain(int)));
     }
 
 
 
     for (int a = 0; a < 10; ++a) {
         Animal *animal = new Animal(a);
-        animal->setPos(::sin((a * 6.28) / 10) * 200,
-                      ::cos((a * 6.28) / 10) * 200);
+       // animal->setPos(::sin((a * 6.28) / 10) * 200,
+        //              ::cos((a * 6.28) / 10) * 200);
+        animal->setPos(25,25);
         m_scene->addItem(animal);
-        connect(m_rain, SIGNAL(raining()), animal, SLOT(onRain()));
+        connect(m_rain, SIGNAL(raining(int)), animal, SLOT(onRain(int)));
     }
+
+
+
+
+    //Cada cuantos dias llueve?
+    m_rainTimer = new QTimer;
+    //CRain *rain = new CRain();
+    QObject::connect(m_rainTimer, SIGNAL(timeout()), m_rain, SLOT(onTimer()));
+    m_rainTimer->start(5000);
+
+    //agregar pastos, hacer 3 corridas una para cada tipo de pasto
+    //cada pasto tiene una cantidad por metro cuadrado
+    //agregar timer de crecimiento de pasto
+    //agregar timer de vaca que come? o usar advance
 }
 
 void View::onTimer()
@@ -296,7 +315,9 @@ void View::onTimer()
     if(m_scene)
         emit m_scene->advance();
 
-    emit m_rain->raining();
+   // emit m_rain->raining(13);
+    // crece el pasto
+
 }
 
 void View::onStartSimButtonPressed()

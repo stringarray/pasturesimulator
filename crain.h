@@ -10,7 +10,7 @@ public:
     explicit CRain(QObject *parent = 0);
 
 signals:
-   void raining();
+   void raining(int mm);
 public slots:
     void onTimer();
 };

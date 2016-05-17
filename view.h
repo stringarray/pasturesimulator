@@ -72,6 +72,7 @@ private:
     QGraphicsScene *m_scene;
 
     CRain *m_rain;
+    QTimer *m_rainTimer;
 };
 
 #endif // VIEW_H

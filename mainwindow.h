@@ -22,6 +22,7 @@ private:
 
      int m_squareMeters;
      QTimer *timer;
+
 };
 
 #endif // MAINWINDOW_H

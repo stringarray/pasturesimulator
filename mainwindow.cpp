@@ -6,7 +6,7 @@
 #include <qdebug>
 
 #include <QtWidgets>
-
+#include "crain.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -32,8 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     timer = new QTimer;
     QObject::connect(timer, SIGNAL(timeout()), view, SLOT(onTimer()));
-
-
     timer->start(3000);
 
 }

@@ -105,3 +105,14 @@ void SqMeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseReleaseEvent(event);
     update();
 }
+
+void SqMeter::onRain(int mm)
+{
+   // qDebug() << "llovio sobre el pasto en: (" << this->x << ", " << this->y << ")";
+}
+
+void SqMeter::consumeGrass()
+{
+    qDebug() << "pasto consumido en (" << this->x << ", " << this->y << ")";
+    this->color = color.dark(110);
+}

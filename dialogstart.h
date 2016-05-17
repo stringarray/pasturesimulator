@@ -16,6 +16,7 @@ public:
     explicit DialogStart(QWidget *parent = 0);
     ~DialogStart();
     int getSqMeters(){return m_squareMeters;}
+    int getAnimals(){return m_animals;}
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);
@@ -23,6 +24,7 @@ private slots:
 private:
     Ui::DialogStart *ui;
     int m_squareMeters;
+    int m_animals;
 };
 
 #endif // DIALOGSTART_H
