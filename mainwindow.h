@@ -13,6 +13,7 @@ class MainWindow : public QWidget
     Q_OBJECT
 public:
      MainWindow(QWidget *parent = 0);
+
      int getSquareMeters(){return m_squareMeters;}
      void setSquareMeters(int meters){m_squareMeters = meters;}
 

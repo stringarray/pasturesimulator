@@ -3,12 +3,13 @@
 
 SqMeter::SqMeter(const QColor &color, int x, int y)
 {
+        this->isRaining = false;
         this->x = x;
         this->y = y;
         this->color = color;
         setZValue(0);
 
-        setFlags(ItemIsSelectable );
+        setFlags( ItemIsSelectable );
         setAcceptHoverEvents(true);
 }
 
@@ -28,9 +29,17 @@ void SqMeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 {
     Q_UNUSED(widget);
 
+
+
     QColor fillColor = (option->state & QStyle::State_Selected) ? color.dark(150) : color;
-    if (option->state & QStyle::State_MouseOver)
-        fillColor = fillColor.light(125);
+
+    if(isRaining)
+    {
+         fillColor = QColor(0, 80, 200);
+         isRaining = false;
+    }
+//    if (option->state & QStyle::State_MouseOver)
+//        fillColor = fillColor.light(125);
 
     const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
     if (lod < 0.2) {
@@ -93,7 +102,7 @@ void SqMeter::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void SqMeter::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->modifiers() & Qt::ShiftModifier) {
-        stuff << event->pos();
+    //    stuff << event->pos();
         update();
         return;
     }
@@ -109,10 +118,31 @@ void SqMeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void SqMeter::onRain(int mm)
 {
    // qDebug() << "llovio sobre el pasto en: (" << this->x << ", " << this->y << ")";
+    //TODO: dibujar gota celeste sobre cuadrado
+    this->color = color.light(110);
+    qDebug() << "llueve";
+    isRaining = true;
+
+    update();
 }
 
 void SqMeter::consumeGrass()
 {
-    qDebug() << "pasto consumido en (" << this->x << ", " << this->y << ")";
+  //  qDebug() << "pasto consumido en (" << this->x << ", " << this->y << ")";
     this->color = color.dark(110);
+    update();
 }
+
+void SqMeter::advance(int step)
+{
+    if (!step)
+        return;
+
+
+ //   qDebug() << "advance. esta lloviendo? " << isRaining;
+   // toggleRainingState();
+
+    if(!isRaining)
+        update();
+}
+

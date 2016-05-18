@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QAbstractButton>
 
+class QPushButton;
 namespace Ui {
 class DialogStart;
 }
@@ -17,14 +18,27 @@ public:
     ~DialogStart();
     int getSqMeters(){return m_squareMeters;}
     int getAnimals(){return m_animals;}
+    void onStartSimButton();
+
+public slots:
+//    void onStartSimButtonPressed();
+//    void onStartSimButtonReleased();
+//    void on_simButton_clicked();
 
 private slots:
-    void on_buttonBox_clicked(QAbstractButton *button);
+
+
+    void on_pushButton_pressed();
+
+    void on_pushButton_released();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::DialogStart *ui;
     int m_squareMeters;
     int m_animals;
+
 };
 
 #endif // DIALOGSTART_H

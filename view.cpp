@@ -23,7 +23,7 @@ void GraphicsView::wheelEvent(QWheelEvent *e)
 }
 #endif
 
-View::View(const QString &name, QWidget *parent)
+View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
     : QFrame(parent)
 {
 
@@ -87,40 +87,12 @@ View::View(const QString &name, QWidget *parent)
     resetButton->setText(tr("0"));
     resetButton->setEnabled(false);
 
-    startSimButton = new QToolButton;
-    startSimButton->setText("Start");
-    startSimButton->setIcon(QPixmap(":/images/btnUnPressed.png"));
-    startSimButton->setFixedSize(70,70);
-    startSimButton->setIconSize(QSize(70, 70));
-
-
     // Label layout
     QHBoxLayout *labelLayout = new QHBoxLayout;
     label = new QLabel(name);
-    label2 = new QLabel(tr("Pointer Mode"));
-    selectModeButton = new QToolButton;
-    selectModeButton->setText(tr("Select"));
-    selectModeButton->setCheckable(true);
-    selectModeButton->setChecked(true);
-    dragModeButton = new QToolButton;
-    dragModeButton->setText(tr("Drag"));
-    dragModeButton->setCheckable(true);
-    dragModeButton->setChecked(false);
-
-
-    QButtonGroup *pointerModeGroup = new QButtonGroup;
-    pointerModeGroup->setExclusive(true);
-    pointerModeGroup->addButton(selectModeButton);
-    pointerModeGroup->addButton(dragModeButton);
 
     labelLayout->addWidget(label);
-    labelLayout->addWidget(startSimButton);
     labelLayout->addStretch();
-    labelLayout->addWidget(label2);
-    labelLayout->addWidget(selectModeButton);
-    labelLayout->addWidget(dragModeButton);
-    labelLayout->addStretch();
-
 
     QGridLayout *topLayout = new QGridLayout;
     topLayout->addLayout(labelLayout, 0, 0);
@@ -130,6 +102,9 @@ View::View(const QString &name, QWidget *parent)
     topLayout->addWidget(resetButton, 2, 1);
     setLayout(topLayout);
 
+    m_graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+    m_graphicsView->setInteractive(false);
+
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetView()));
     connect(m_zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(setupMatrix()));
     connect(rotateSlider, SIGNAL(valueChanged(int)), this, SLOT(setupMatrix()));
@@ -137,21 +112,35 @@ View::View(const QString &name, QWidget *parent)
             this, SLOT(setResetButtonEnabled()));
     connect(m_graphicsView->horizontalScrollBar(), SIGNAL(valueChanged(int)),
             this, SLOT(setResetButtonEnabled()));
-    connect(selectModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
-    connect(dragModeButton, SIGNAL(toggled(bool)), this, SLOT(togglePointerMode()));
-
 
     connect(zoomInIcon, SIGNAL(clicked()), this, SLOT(zoomIn()));
     connect(zoomOutIcon, SIGNAL(clicked()), this, SLOT(zoomOut()));
-    connect(startSimButton, SIGNAL(clicked(bool)), this, SLOT(onStartSimButton()));
-    connect(startSimButton, SIGNAL(pressed()), this, SLOT(onStartSimButtonPressed()));
-    connect(startSimButton, SIGNAL(released()), this, SLOT(onStartSimButtonReleased()));
+
 
     m_rain = new CRain();
 
 
 
     setupMatrix();
+
+    DialogStart dialog;
+    int result = dialog.exec();
+
+    if(result == QDialog::Accepted)
+    {
+        populateScene(dialog.getSqMeters());
+        this->view()->setScene(m_scene);
+        theMainWindow->show();
+    }
+    else
+    {
+       // TODO: close application without crash
+        theMainWindow->close();
+        this->close();
+        emit QApplication::quit();
+
+
+    }
 }
 
 QGraphicsView *View::view() const
@@ -169,24 +158,11 @@ void View::resetView()
     resetButton->setEnabled(false);
 }
 
-void View::onStartSimButton()
-{
-    DialogStart dialog;
-    int result = dialog.exec();
-
-    if(result == QDialog::Accepted)
-    {
-        populateScene(dialog.getSqMeters());
-        this->view()->setScene(m_scene);
-        this->startSimButton->setDisabled(true);
-    }
-
-}
-
 void View::setResetButtonEnabled()
 {
     resetButton->setEnabled(true);
 }
+
 void View::setupMatrix()
 {
     qreal scale = qPow(qreal(2), (m_zoomSlider->value() - 250) / qreal(50));
@@ -195,33 +171,14 @@ void View::setupMatrix()
     QTransform transform;
     matrix.scale(scale, scale);
 
-
     transform.rotate(rotateSlider->value(), Qt::XAxis);
     m_graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     m_graphicsView->setTransform(transform);
 
     m_graphicsView->setMatrix(matrix, true);
 
-
     setResetButtonEnabled();
 }
-
-void View::setupTransform()
-{
-//    QTransform transform;
-//    transform.rotate(rotateSlider->value(), Qt::XAxis);
-//    this->view()->setTransform(transform);
-}
-
-void View::togglePointerMode()
-{
-    m_graphicsView->setDragMode(selectModeButton->isChecked()
-                              ? QGraphicsView::RubberBandDrag
-                              : QGraphicsView::ScrollHandDrag);
-    m_graphicsView->setInteractive(selectModeButton->isChecked());
-}
-
-
 
 void View::zoomIn(int level)
 {
@@ -296,11 +253,12 @@ void View::populateScene(int squareMeters)
     }
 
 
-
+    m_advanceTimer = new QTimer;
+    QObject::connect(m_advanceTimer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    m_advanceTimer->start(1000);
 
     //Cada cuantos dias llueve?
     m_rainTimer = new QTimer;
-    //CRain *rain = new CRain();
     QObject::connect(m_rainTimer, SIGNAL(timeout()), m_rain, SLOT(onTimer()));
     m_rainTimer->start(5000);
 
@@ -315,28 +273,11 @@ void View::onTimer()
     if(m_scene)
         emit m_scene->advance();
 
-   // emit m_rain->raining(13);
-    // crece el pasto
-
 }
-
-void View::onStartSimButtonPressed()
-{
-    this->startSimButton->setIcon(QPixmap(":/images/btnPressed.png"));
-}
-
-void View::onStartSimButtonReleased()
-{
-    this->startSimButton->setIcon(QPixmap(":/images/btnUnPressed.png"));
-}
-
-
 
 void View::getSides(int sqMeters, int &w, int &n, int &r)
 {
     double D = std::sqrt(sqMeters);
-
-
 
     w = floor(D);
     n = ceil(D);
@@ -345,7 +286,5 @@ void View::getSides(int sqMeters, int &w, int &n, int &r)
         n--;
 
     r = sqMeters - w*n;
-
-
 
 }

@@ -64,6 +64,7 @@ private:
     qreal speed;
     qreal AnimalEyeDirection;
     QColor color;
+    int m_peso;
 
 };
 //! [0]

@@ -13,9 +13,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
 
+    View *view = new View(this, "Running simulation:");
+    //view->setMainWindow(this); // tratando de cerrar la aplicacion desde view.
 
-
-    View *view = new View("Start simulation:");
     view->view()->setCacheMode(QGraphicsView::CacheBackground);
     view->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     view->view()->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -28,11 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle(tr("Farm simulator"));
 
-
-
-    timer = new QTimer;
-    QObject::connect(timer, SIGNAL(timeout()), view, SLOT(onTimer()));
-    timer->start(3000);
 
 }
 

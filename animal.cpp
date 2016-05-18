@@ -67,7 +67,7 @@ Animal::Animal(int id)
 {
     //setRotation(qrand() % (360 * 16));
     setZValue(1);
-    setFlags( ItemIsMovable );
+    //setFlags( ItemIsMovable );
     this->m_id = id;
 }
 
@@ -95,43 +95,8 @@ void Animal::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     // Body
     painter->setBrush(color);
     painter->drawEllipse(-15, -20, 26, 40);
+    painter->drawText(0, 5, QString::number(this->m_id));
 
-//    // Eyes
-//    painter->setBrush(Qt::white);
-//    painter->drawEllipse(-10, -17, 8, 8);
-//    painter->drawEllipse(2, -17, 8, 8);
-
-//    // Nose
-//    painter->setBrush(Qt::black);
-//    painter->drawEllipse(QRectF(-4, -22, 4, 4));
-//    painter->drawEllipse(QRectF(0, -22, 4, 4));
-
-//    // Pupils
-//    painter->drawEllipse(QRectF(-8.0 + AnimalEyeDirection, -17, 4, 4));
-//    painter->drawEllipse(QRectF(4.0 + AnimalEyeDirection, -17, 4, 4));
-
-//    // collision circle
-//    painter->setBrush(scene()->collidingItems(this).isEmpty() ? Qt::darkYellow : Qt::red);
-//    //painter->drawEllipse(-17, -12, 16, 16);
-//    painter->drawEllipse(-8, -5, 16, 16);
-
-//    QPainterPath horn1(QPointF(-5, -10));
-//    QPainterPath horn2(QPointF(1, 0));
-
-//    horn1.cubicTo(-25, -25, -30, -30, -25, -25);
-//    horn2.cubicTo(-1, 5, -5, 10, 0, 15);
-
-//    painter->setBrush(Qt::NoBrush);
-//    painter->drawPath(horn1);
-//   // painter->drawPath(horn2);
-
-//    // Tail
-//    QPainterPath path(QPointF(0, 20));
-//    path.cubicTo(-5, 22, -5, 22, 0, 25);
-//    path.cubicTo(5, 27, 5, 32, 0, 30);
-//    path.cubicTo(-5, 32, -5, 42, 0, 35);
-//    painter->setBrush(Qt::NoBrush);
-//    painter->drawPath(path);
 
 }
 
@@ -162,13 +127,13 @@ void Animal::advance(int step)
     }
 
     int nuevaPos = qrand() % metros.count();
-    qDebug() << "mover a : " << nuevaPos << " total: " << metros.count();
+ //   qDebug() << "mover a : " << nuevaPos << " total: " << metros.count();
 
     setPos(metros.at(nuevaPos)->pos().x()+25, metros.at(nuevaPos)->pos().y()+25 );
 
     metros.at(nuevaPos)->consumeGrass();
 
-    qDebug() << "fin items.";
+ //   qDebug() << "fin items.";
 
 //scene()->addPolygon(QPolygonF() << mapToScene(-50, 50)
 //                                << mapToScene(-50, -50)
@@ -180,4 +145,6 @@ void Animal::advance(int step)
 void Animal::onRain(int mm)
 {
     //qDebug() << "slot on rain triggered on animal: " << m_id << "it rained: " << mm;
+    //TODO: dibujar gotita celeste sobre el animal
+
 }
