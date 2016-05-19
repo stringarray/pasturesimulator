@@ -3,14 +3,16 @@
 
 SqMeter::SqMeter(const QColor &color, int x, int y)
 {
-        this->isRaining = false;
-        this->x = x;
-        this->y = y;
-        this->color = color;
-        setZValue(0);
 
-        setFlags( ItemIsSelectable );
-        setAcceptHoverEvents(true);
+    this->x = x;
+    this->y = y;
+    this->color = color;
+    setZValue(0);
+
+    setFlags( ItemIsSelectable );
+    setAcceptHoverEvents(true);
+
+    this->m_pesoPasto = 50;
 }
 
 QRectF SqMeter::boundingRect() const
@@ -29,17 +31,13 @@ void SqMeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 {
     Q_UNUSED(widget);
 
-
+    painter->setPen(QColor(255,255,255));
 
     QColor fillColor = (option->state & QStyle::State_Selected) ? color.dark(150) : color;
 
-    if(isRaining)
-    {
-         fillColor = QColor(0, 80, 200);
-         isRaining = false;
-    }
-//    if (option->state & QStyle::State_MouseOver)
-//        fillColor = fillColor.light(125);
+
+    if (option->state & QStyle::State_MouseOver)
+        fillColor = fillColor.light(125);
 
     const qreal lod = option->levelOfDetailFromTransform(painter->worldTransform());
     if (lod < 0.2) {
@@ -77,19 +75,16 @@ void SqMeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     // Draw text
     if (lod >= 2) {
-        QFont font("Times", 10);
+        QFont font("Times", 16);
         font.setStyleStrategy(QFont::ForceOutline);
         painter->setFont(font);
         painter->save();
         painter->scale(0.1, 0.1);
         painter->drawText(170, 180, QString("Metro cuadrado de campo en posición %1x%2").arg(x).arg(y));
-        painter->drawText(170, 200, QString("TODO: Características"));
+        painter->drawText(170, 200, QString("Pasto: ") + QString::number(m_pesoPasto));
         painter->drawText(170, 220, QString("TODO: Mas características"));
         painter->restore();
     }
-
-
-
 
 }
 
@@ -99,15 +94,7 @@ void SqMeter::mousePressEvent(QGraphicsSceneMouseEvent *event)
     update();
 }
 
-void SqMeter::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (event->modifiers() & Qt::ShiftModifier) {
-    //    stuff << event->pos();
-        update();
-        return;
-    }
-    QGraphicsItem::mouseMoveEvent(event);
-}
+
 
 void SqMeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -118,11 +105,8 @@ void SqMeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void SqMeter::onRain(int mm)
 {
    // qDebug() << "llovio sobre el pasto en: (" << this->x << ", " << this->y << ")";
-    //TODO: dibujar gota celeste sobre cuadrado
     this->color = color.light(110);
-    qDebug() << "llueve";
-    isRaining = true;
-
+    this->m_pesoPasto++;
     update();
 }
 
@@ -130,6 +114,7 @@ void SqMeter::consumeGrass()
 {
   //  qDebug() << "pasto consumido en (" << this->x << ", " << this->y << ")";
     this->color = color.dark(110);
+    this->m_pesoPasto-=5;
     update();
 }
 
@@ -137,12 +122,5 @@ void SqMeter::advance(int step)
 {
     if (!step)
         return;
-
-
- //   qDebug() << "advance. esta lloviendo? " << isRaining;
-   // toggleRainingState();
-
-    if(!isRaining)
-        update();
 }
 

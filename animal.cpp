@@ -48,6 +48,7 @@
 #include <QGraphicsObject>
 #include "sqmeter.h"
 
+
 static const double Pi = 3.14159265358979323846264338327950288419717;
 static double TwoPi = 2.0 * Pi;
 
@@ -63,15 +64,15 @@ static qreal normalizeAngle(qreal angle)
 
 Animal::Animal(int id)
     : angle(0), speed(0), AnimalEyeDirection(0),
-      color(qrand() % 200, qrand() % 40, qrand() % 20)
+      color(qrand() % 150, qrand() % 40, qrand() % 20)
 {
     //setRotation(qrand() % (360 * 16));
     setZValue(1);
     //setFlags( ItemIsMovable );
     this->m_id = id;
+
+    this->m_pesoAnimal = 20;
 }
-
-
 
 QRectF Animal::boundingRect() const
 {
@@ -80,8 +81,6 @@ QRectF Animal::boundingRect() const
                   36 + adjust, 60 + adjust);
 }
 
-
-
 QPainterPath Animal::shape() const
 {
     QPainterPath path;
@@ -89,20 +88,35 @@ QPainterPath Animal::shape() const
     return path;
 }
 
-
 void Animal::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    // Body
+    // TODO: reemplazar por imagen de vaca
     painter->setBrush(color);
-    painter->drawEllipse(-15, -20, 26, 40);
-    painter->drawText(0, 5, QString::number(this->m_id));
+    painter->drawEllipse(-15, -20, 15, 20);
 
-
+    QFont font("Times", 16);
+    font.setStyleStrategy(QFont::ForceOutline);
+    painter->setFont(font);
+    painter->scale(0.1, 0.1);
+    painter->setPen(QColor(255,255,255));
+    // Body
+    if(m_pesoAnimal >= 0)
+    {
+        painter->drawText(0, 3, QString::number(this->m_id) + " " + QString::number(m_pesoAnimal));
+    }
+    else
+    {
+        this->color = QColor(255,0,255);
+        painter->drawText(0, 5, QString::number(this->m_id) + " MUERTA");
+    }
 }
 
 void Animal::advance(int step)
 {
     if (!step)
+        return;
+
+    if(m_pesoAnimal <= 0)
         return;
 
     QList<SqMeter *> metros;
@@ -111,27 +125,35 @@ void Animal::advance(int step)
                                                         << mapToScene(50, -50)
                                                         << mapToScene(50, 50));
     int i = 0;
-    foreach (QGraphicsItem *item, surrounding) {
+    foreach (QGraphicsItem *item, surrounding)
+    {
         if (item == this)
             continue;
-
        // qDebug() << "item: " << ++i << " x: " << item->pos().x() << " y: " << item->pos().y();
-
         SqMeter * meter = dynamic_cast<SqMeter*>(item);
-
         if (meter != NULL)
         {
             metros << meter;
-
         }
     }
 
+    //TODO: en vez de moverse randomicamente, que vaya hacia donde mas pasto hay?
+    // o que solo se mueva si el pasto del cuadrado actual se termino?
     int nuevaPos = qrand() % metros.count();
- //   qDebug() << "mover a : " << nuevaPos << " total: " << metros.count();
+    //qDebug() << "mover a : " << nuevaPos << " total: " << metros.count();
 
-    setPos(metros.at(nuevaPos)->pos().x()+25, metros.at(nuevaPos)->pos().y()+25 );
+    moveAnimal(metros.at(nuevaPos)->pos().x()+25, metros.at(nuevaPos)->pos().y()+25 );
 
-    metros.at(nuevaPos)->consumeGrass();
+
+    if(metros.at(nuevaPos)->m_pesoPasto > 0)
+    {
+        metros.at(nuevaPos)->consumeGrass();
+        m_pesoAnimal++;
+    }
+    else
+    {
+        m_pesoAnimal--;
+    }
 
  //   qDebug() << "fin items.";
 
@@ -145,6 +167,33 @@ void Animal::advance(int step)
 void Animal::onRain(int mm)
 {
     //qDebug() << "slot on rain triggered on animal: " << m_id << "it rained: " << mm;
-    //TODO: dibujar gotita celeste sobre el animal
+
+    m_pesoAnimal--;
+}
+
+void Animal::moveAnimal(int x, int y)
+{
+
+    QPoint startPosition;
+    startPosition.setX(this->pos().x());
+    startPosition.setY(this->pos().y());
+
+//    qDebug() << "start x: " << startPosition.x() << " start y: " << startPosition.y();
+
+    QPoint endPosition;
+    endPosition.setX(x);
+    endPosition.setY(y);
+
+    animation = new QPropertyAnimation(this, "pos");
+    animation->setStartValue(startPosition);
+    animation->setEasingCurve(QEasingCurve::InOutQuad);
+    animation->setDuration(1000); // 1 seconds
+    animation->setEndValue(endPosition);
+
+
+//    qDebug() << "start animation x: " << x << "y: " << y;
+    animation->start(QPropertyAnimation::DeleteWhenStopped);
+
+    update();
 
 }

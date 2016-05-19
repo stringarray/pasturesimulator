@@ -42,9 +42,12 @@
 #define ANIMAL_H
 
 #include <QGraphicsItem>
+#include <QPropertyAnimation>
 
-//! [0]
-class Animal : public QObject, public QGraphicsItem
+
+
+//class Animal : public QObject, public QGraphicsItem
+class Animal : public QGraphicsObject
 {
     Q_OBJECT
 public:
@@ -54,6 +57,9 @@ public:
     QPainterPath shape() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget) Q_DECL_OVERRIDE;
+    void moveAnimal(int x, int y);
+    int m_pesoAnimal;
+
 public slots:
     void onRain(int mm);
 protected:
@@ -65,8 +71,10 @@ private:
     qreal AnimalEyeDirection;
     QColor color;
     int m_peso;
+    QPropertyAnimation *animation;
+    QSequentialAnimationGroup *group;
 
 };
-//! [0]
+
 
 #endif

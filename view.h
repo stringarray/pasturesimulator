@@ -5,6 +5,8 @@
 #include <QGraphicsView>
 #include "crain.h"
 #include <mainwindow.h>
+#include <QPropertyAnimation>
+#include <QGraphicsOpacityEffect>
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -37,7 +39,7 @@ class View : public QFrame
 public:
     explicit View(MainWindow *theMainWindow, const QString &name, QWidget *parent = 0);
     QGraphicsView *view() const;
-    void populateScene(int squareMeters);
+    void populateScene(int squareMeters, int amountAnimals);
     void getSides(int sqMeters, int &w, int &n, int &r);
     //void setMainWindow(MainWindow *w){this->theMainWindow = w;}
 
@@ -45,6 +47,7 @@ public slots:
     void zoomIn(int level = 1);
     void zoomOut(int level = 1);
     void onTimer();
+    void onRainTimer();
 
 private slots:
     void resetView();
@@ -64,7 +67,12 @@ private:
     CRain *m_rain;
     QTimer *m_rainTimer;
     QTimer *m_advanceTimer;
+    QLabel *m_labelRain;
+    QPropertyAnimation *m_rainAnimation;
+    QGraphicsOpacityEffect *m_fadeEffect;
+    QLabel *m_labelStep;
 
+    int m_stepCount;
 };
 
 #endif // VIEW_H

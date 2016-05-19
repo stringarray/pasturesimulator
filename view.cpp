@@ -94,6 +94,17 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
     labelLayout->addWidget(label);
     labelLayout->addStretch();
 
+    m_labelRain = new QLabel("LLuvia");
+    m_labelRain->setFont(QFont("Times", 28));
+    m_labelRain->setVisible(false);
+    labelLayout->addWidget(m_labelRain);
+    labelLayout->addStretch();
+
+    m_labelStep = new QLabel("Dia: 1");
+    m_labelStep->setFont(QFont("Times", 28));
+    labelLayout->addWidget(m_labelStep);
+    labelLayout->addStretch();
+
     QGridLayout *topLayout = new QGridLayout;
     topLayout->addLayout(labelLayout, 0, 0);
     topLayout->addWidget(m_graphicsView, 1, 0);
@@ -117,8 +128,8 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
     connect(zoomOutIcon, SIGNAL(clicked()), this, SLOT(zoomOut()));
 
 
-    m_rain = new CRain();
-
+    m_rain = new CRain(this);
+    m_stepCount = 1;
 
 
     setupMatrix();
@@ -128,7 +139,7 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
 
     if(result == QDialog::Accepted)
     {
-        populateScene(dialog.getSqMeters());
+        populateScene(dialog.getSqMeters(), dialog.getAnimals());
         this->view()->setScene(m_scene);
         theMainWindow->show();
     }
@@ -200,7 +211,7 @@ void View::rotateRight()
     rotateSlider->setValue(rotateSlider->value() + 10);
 }
 
-void View::populateScene(int squareMeters)
+void View::populateScene(int squareMeters, int amountAnimals)
 {
 
     int westSide = 0;
@@ -225,7 +236,6 @@ void View::populateScene(int squareMeters)
             ++yy;
             SqMeter *item = new SqMeter(color, xx, yy);
             item->setPos(QPointF(j*50, i*50));
-            item->m_pesoPasto = 14;
             m_scene->addItem(item);
             connect(m_rain, SIGNAL(raining(int)), item, SLOT(onRain(int)));
         }
@@ -236,14 +246,13 @@ void View::populateScene(int squareMeters)
     {
         SqMeter *item = new SqMeter(color, k, westSide+1);
         item->setPos(QPointF(k*50, westSide*50));
-        item->m_pesoPasto = 14;
         m_scene->addItem(item);
         connect(m_rain, SIGNAL(raining(int)), item, SLOT(onRain(int)));
     }
 
 
 
-    for (int a = 0; a < 10; ++a) {
+    for (int a = 0; a < amountAnimals; ++a) {
         Animal *animal = new Animal(a);
        // animal->setPos(::sin((a * 6.28) / 10) * 200,
         //              ::cos((a * 6.28) / 10) * 200);
@@ -260,7 +269,8 @@ void View::populateScene(int squareMeters)
     //Cada cuantos dias llueve?
     m_rainTimer = new QTimer;
     QObject::connect(m_rainTimer, SIGNAL(timeout()), m_rain, SLOT(onTimer()));
-    m_rainTimer->start(5000);
+    QObject::connect(m_rainTimer, SIGNAL(timeout()), this, SLOT(onRainTimer()));
+    m_rainTimer->start(7000);
 
     //agregar pastos, hacer 3 corridas una para cada tipo de pasto
     //cada pasto tiene una cantidad por metro cuadrado
@@ -271,7 +281,25 @@ void View::populateScene(int squareMeters)
 void View::onTimer()
 {
     if(m_scene)
+    {
         emit m_scene->advance();
+        m_stepCount++;
+        this->m_labelStep->setText("Dia: " + QString::number(m_stepCount));
+    }
+}
+
+void View::onRainTimer()
+{
+     m_labelRain->setVisible(true);
+     m_fadeEffect = new QGraphicsOpacityEffect(m_labelRain);
+     m_labelRain->setGraphicsEffect(m_fadeEffect);
+     m_rainAnimation = new QPropertyAnimation(m_fadeEffect, "opacity");
+     m_rainAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+     m_rainAnimation->setDuration(1000);
+     m_rainAnimation->setStartValue(1.0);
+     m_rainAnimation->setEndValue(0.01);
+     m_rainAnimation->start(QPropertyAnimation::DeleteWhenStopped);
+     update();
 
 }
 

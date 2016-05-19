@@ -9,8 +9,17 @@ DialogStart::DialogStart(QWidget *parent) :
     ui(new Ui::DialogStart)
 {
     ui->setupUi(this);
-    ui->lineEditMetros->setValidator(new QIntValidator(100, 50000, this));
+//    ui->lineEditMetros->setValidator(new QIntValidator(100, 50000, this));
+ //   ui->lineEditAnimales->setValidator((new QIntValidator(1, 500, this)));
     ui->pushButton->setIconSize(QSize(70, 70));
+
+    ui->spinBoxAnimals->setMinimum(1);
+    ui->spinBoxAnimals->setMaximum(1000);
+    ui->spinBoxAnimals->setValue(10);
+
+    ui->spinBoxSquares->setMinimum(25);
+    ui->spinBoxSquares->setMaximum(50000);
+    ui->spinBoxSquares->setValue(500);
 
 }
 
@@ -31,7 +40,10 @@ void DialogStart::on_pushButton_released()
 
 void DialogStart::on_pushButton_clicked()
 {
-    m_squareMeters = ui->lineEditMetros->text().toInt();
-    m_animals = ui->lineEditAnimales->text().toInt();
+
+    m_animals = ui->spinBoxAnimals->value();
+    m_squareMeters = ui->spinBoxSquares->value();
     emit QDialog::accept();
 }
+
+

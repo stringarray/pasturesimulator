@@ -13,6 +13,7 @@ signals:
    void raining(int mm);
 public slots:
     void onTimer();
+
 };
 
 #endif // CRAIN_H

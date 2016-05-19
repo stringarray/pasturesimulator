@@ -35,7 +35,6 @@ public slots:
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void advance(int step) Q_DECL_OVERRIDE;
 
@@ -43,7 +42,7 @@ private:
     int x;
     int y;
     QColor color;
-    bool isRaining;
+
 };
 
 #endif // SQMETER_H
