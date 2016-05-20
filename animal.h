@@ -51,7 +51,7 @@ class Animal : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    Animal(int id);
+    Animal(int id, int speed);
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     QPainterPath shape() const Q_DECL_OVERRIDE;
@@ -67,7 +67,7 @@ protected:
     int m_id;
 private:
     qreal angle;
-    qreal speed;
+    int m_speed;
     qreal AnimalEyeDirection;
     QColor color;
     int m_peso;

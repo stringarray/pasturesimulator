@@ -18,6 +18,7 @@ public:
     ~DialogStart();
     int getSqMeters(){return m_squareMeters;}
     int getAnimals(){return m_animals;}
+    int getRainInterval(){return m_intervalForRains;}
     void onStartSimButton();
 
 public slots:
@@ -40,6 +41,7 @@ private:
     Ui::DialogStart *ui;
     int m_squareMeters;
     int m_animals;
+    int m_intervalForRains;
 
 };
 

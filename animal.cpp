@@ -61,10 +61,10 @@ static qreal normalizeAngle(qreal angle)
     return angle;
 }
 
-
-Animal::Animal(int id)
-    : angle(0), speed(0), AnimalEyeDirection(0),
-      color(qrand() % 150, qrand() % 40, qrand() % 20)
+//m_speed = m_intervalForStep de View
+Animal::Animal(int id, int speed)
+    : angle(0), m_speed(speed), AnimalEyeDirection(0),
+      color(155,90,0)
 {
     //setRotation(qrand() % (360 * 16));
     setZValue(1);
@@ -93,22 +93,31 @@ void Animal::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     // TODO: reemplazar por imagen de vaca
     painter->setBrush(color);
     painter->drawEllipse(-15, -20, 15, 20);
+    //painter->drawTiledPixmap(QRect(-15, -20, 50, 34), QPixmap(":/images/cow.png"), QPoint(-15, -20));
 
     QFont font("Times", 16);
     font.setStyleStrategy(QFont::ForceOutline);
+    font.setBold(true);
     painter->setFont(font);
-    painter->scale(0.1, 0.1);
+    painter->save();
     painter->setPen(QColor(255,255,255));
+    painter->scale(0.16, 0.16);
+
     // Body
     if(m_pesoAnimal >= 0)
     {
-        painter->drawText(0, 3, QString::number(this->m_id) + " " + QString::number(m_pesoAnimal));
+
+        painter->drawText(-70, -80, "Id: " + QString::number(this->m_id));
+        painter->drawText(-70, -30, QString::number(m_pesoAnimal) + "%");
     }
     else
     {
-        this->color = QColor(255,0,255);
+        this->color = QColor(255, 0, 0);
+
+
         painter->drawText(0, 5, QString::number(this->m_id) + " MUERTA");
     }
+    painter->restore();
 }
 
 void Animal::advance(int step)
@@ -186,8 +195,8 @@ void Animal::moveAnimal(int x, int y)
 
     animation = new QPropertyAnimation(this, "pos");
     animation->setStartValue(startPosition);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-    animation->setDuration(1000); // 1 seconds
+    animation->setEasingCurve(QEasingCurve::OutCubic);
+    animation->setDuration(m_speed/3); // 1/3 seconds
     animation->setEndValue(endPosition);
 
 

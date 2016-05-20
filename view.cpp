@@ -5,7 +5,6 @@
 #include "dialogstart.h"
 #include "animal.h"
 #include "sqmeter.h"
-
 #include "crain.h"
 
 #ifndef QT_NO_WHEELEVENT
@@ -44,13 +43,13 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
     zoomInIcon->setAutoRepeat(true);
     zoomInIcon->setAutoRepeatInterval(33);
     zoomInIcon->setAutoRepeatDelay(0);
-    zoomInIcon->setIcon(QPixmap(":/zoomin.png"));
+    zoomInIcon->setIcon(QPixmap(":/images/zoomin.png"));
     zoomInIcon->setIconSize(iconSize);
     QToolButton *zoomOutIcon = new QToolButton;
     zoomOutIcon->setAutoRepeat(true);
     zoomOutIcon->setAutoRepeatInterval(33);
     zoomOutIcon->setAutoRepeatDelay(0);
-    zoomOutIcon->setIcon(QPixmap(":/zoomout.png"));
+    zoomOutIcon->setIcon(QPixmap(":/images/zoomout.png"));
     zoomOutIcon->setIconSize(iconSize);
     m_zoomSlider = new QSlider;
     m_zoomSlider->setMinimum(0);
@@ -89,21 +88,33 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
 
     // Label layout
     QHBoxLayout *labelLayout = new QHBoxLayout;
-    label = new QLabel(name);
+    m_labelTitle = new QLabel(name);
 
-    labelLayout->addWidget(label);
+    labelLayout->addWidget(m_labelTitle);
     labelLayout->addStretch();
 
     m_labelRain = new QLabel("LLuvia");
-    m_labelRain->setFont(QFont("Times", 28));
+    m_labelRain->setFont(QFont("Times", 20));
     m_labelRain->setVisible(false);
     labelLayout->addWidget(m_labelRain);
     labelLayout->addStretch();
 
     m_labelStep = new QLabel("Dia: 1");
-    m_labelStep->setFont(QFont("Times", 28));
+    m_labelStep->setFont(QFont("Times", 20));
     labelLayout->addWidget(m_labelStep);
     labelLayout->addStretch();
+
+    m_pauseButton = new QToolButton();
+    m_pauseButton->setText("Pausar");
+    labelLayout->addWidget(m_pauseButton);
+
+    m_spinSpeed = new QSpinBox();
+    m_spinSpeed->setMaximum(10);
+    m_spinSpeed->setMinimum(1);
+    m_spinSpeed->setValue(1);
+    QLabel *speed = new QLabel("Velocidad: ");
+    labelLayout->addWidget(speed);
+    labelLayout->addWidget(m_spinSpeed);
 
     QGridLayout *topLayout = new QGridLayout;
     topLayout->addLayout(labelLayout, 0, 0);
@@ -127,6 +138,9 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
     connect(zoomInIcon, SIGNAL(clicked()), this, SLOT(zoomIn()));
     connect(zoomOutIcon, SIGNAL(clicked()), this, SLOT(zoomOut()));
 
+    connect(m_pauseButton, SIGNAL(clicked(bool)), this, SLOT(onPauseButton()));
+    connect(m_spinSpeed, SIGNAL(valueChanged(int)), this, SLOT(onSpinChange()));
+
 
     m_rain = new CRain(this);
     m_stepCount = 1;
@@ -139,6 +153,14 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
 
     if(result == QDialog::Accepted)
     {
+        //TODO: que se pueda setear la velocidad de la simulacion
+        m_intervalForStep = 1000;
+        m_intervalForRain = dialog.getRainInterval() * 1000;
+
+        //TODO: usar estas variables para logging, por ahora no se usan
+        m_animalsCount = dialog.getAnimals();
+        m_squaresCount = dialog.getSqMeters();
+
         populateScene(dialog.getSqMeters(), dialog.getAnimals());
         this->view()->setScene(m_scene);
         theMainWindow->show();
@@ -149,7 +171,6 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
         theMainWindow->close();
         this->close();
         emit QApplication::quit();
-
 
     }
 }
@@ -253,7 +274,7 @@ void View::populateScene(int squareMeters, int amountAnimals)
 
 
     for (int a = 0; a < amountAnimals; ++a) {
-        Animal *animal = new Animal(a);
+        Animal *animal = new Animal(a, this->m_intervalForStep);
        // animal->setPos(::sin((a * 6.28) / 10) * 200,
         //              ::cos((a * 6.28) / 10) * 200);
         animal->setPos(25,25);
@@ -264,13 +285,13 @@ void View::populateScene(int squareMeters, int amountAnimals)
 
     m_advanceTimer = new QTimer;
     QObject::connect(m_advanceTimer, SIGNAL(timeout()), this, SLOT(onTimer()));
-    m_advanceTimer->start(1000);
+    m_advanceTimer->start(m_intervalForStep);
 
     //Cada cuantos dias llueve?
     m_rainTimer = new QTimer;
     QObject::connect(m_rainTimer, SIGNAL(timeout()), m_rain, SLOT(onTimer()));
     QObject::connect(m_rainTimer, SIGNAL(timeout()), this, SLOT(onRainTimer()));
-    m_rainTimer->start(7000);
+    m_rainTimer->start(m_intervalForRain);
 
     //agregar pastos, hacer 3 corridas una para cada tipo de pasto
     //cada pasto tiene una cantidad por metro cuadrado
@@ -280,12 +301,20 @@ void View::populateScene(int squareMeters, int amountAnimals)
 
 void View::onTimer()
 {
-    if(m_scene)
+    if(m_stepCount < 450)
     {
-        emit m_scene->advance();
-        m_stepCount++;
-        this->m_labelStep->setText("Dia: " + QString::number(m_stepCount));
+        if(m_scene)
+        {
+            emit m_scene->advance();
+            m_stepCount++;
+            this->m_labelStep->setText("Dia: " + QString::number(m_stepCount));
+        }
+    } else { //ya pasaron los 15 meses
+        this->m_labelTitle->setText("Simulación finalizada.");
+        m_advanceTimer->stop();
+        m_rainTimer->stop();
     }
+
 }
 
 void View::onRainTimer()
@@ -315,4 +344,31 @@ void View::getSides(int sqMeters, int &w, int &n, int &r)
 
     r = sqMeters - w*n;
 
+}
+
+void View::onPauseButton()
+{
+    if(m_pauseButton->text() == "Pausar")
+    {
+        this->m_pauseButton->setText("Continuar");
+        this->m_advanceTimer->stop();
+        this->m_rainTimer->stop();
+    } else {
+        this->m_pauseButton->setText("Pausar");
+        this->m_advanceTimer->start(m_intervalForStep);
+        this->m_rainTimer->start(m_intervalForRain);
+    }
+
+}
+
+void View::onSpinChange()
+{
+    this->m_advanceTimer->stop();
+    this->m_rainTimer->stop();
+
+    int step = this->m_intervalForStep /this->m_spinSpeed->value();
+    int rain = this->m_intervalForRain /this->m_spinSpeed->value();
+
+    this->m_advanceTimer->start(step);
+    this->m_rainTimer->start(rain);
 }

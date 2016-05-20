@@ -31,10 +31,8 @@ void SqMeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 {
     Q_UNUSED(widget);
 
-    painter->setPen(QColor(255,255,255));
-
     QColor fillColor = (option->state & QStyle::State_Selected) ? color.dark(150) : color;
-
+    painter->setPen(QPen(Qt::black, 0));
 
     if (option->state & QStyle::State_MouseOver)
         fillColor = fillColor.light(125);
@@ -56,12 +54,12 @@ void SqMeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     QPen oldPen = painter->pen();
     QPen pen = oldPen;
     int width = 0;
-    if (option->state & QStyle::State_Selected)
-        width += 2;
+//    if (option->state & QStyle::State_Selected)
+//        width += 2;
 
     pen.setWidth(width);
     QBrush b = painter->brush();
-    painter->setBrush(QBrush(fillColor.dark(option->state & QStyle::State_Sunken ? 120 : 100)));
+    painter->setBrush(QBrush(fillColor));
 
     painter->drawRect(QRect(0, 0, 50, 50));
     painter->setBrush(b);
@@ -70,19 +68,20 @@ void SqMeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
        // painter->setPen(QPen(Qt::gray, 1));
        // painter->drawLine(15, 54, 94, 54);
        // painter->drawLine(94, 53, 94, 15);
-        painter->setPen(QPen(Qt::black, 0));
+        //painter->setPen(QPen(Qt::black, 0));
     }
 
     // Draw text
     if (lod >= 2) {
-        QFont font("Times", 16);
+        QFont font("Times", 20);
         font.setStyleStrategy(QFont::ForceOutline);
         painter->setFont(font);
         painter->save();
-        painter->scale(0.1, 0.1);
-        painter->drawText(170, 180, QString("Metro cuadrado de campo en posición %1x%2").arg(x).arg(y));
-        painter->drawText(170, 200, QString("Pasto: ") + QString::number(m_pesoPasto));
-        painter->drawText(170, 220, QString("TODO: Mas características"));
+        painter->setPen(QColor(255,255,255));
+        painter->scale(0.12, 0.12);
+        painter->drawText(20, 60, QString("Hectárea en posición (%1, %2)").arg(x).arg(y));
+        painter->drawText(20, 100, QString("Pasto: ") + QString::number(m_pesoPasto));
+       // painter->drawText(10, 220, QString("TODO: Mas características"));
         painter->restore();
     }
 
@@ -94,8 +93,6 @@ void SqMeter::mousePressEvent(QGraphicsSceneMouseEvent *event)
     update();
 }
 
-
-
 void SqMeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseReleaseEvent(event);
@@ -105,7 +102,7 @@ void SqMeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void SqMeter::onRain(int mm)
 {
    // qDebug() << "llovio sobre el pasto en: (" << this->x << ", " << this->y << ")";
-    this->color = color.light(110);
+    this->color = color.lighter(105);
     this->m_pesoPasto++;
     update();
 }
@@ -113,7 +110,7 @@ void SqMeter::onRain(int mm)
 void SqMeter::consumeGrass()
 {
   //  qDebug() << "pasto consumido en (" << this->x << ", " << this->y << ")";
-    this->color = color.dark(110);
+    this->color = color.darker(110);
     this->m_pesoPasto-=5;
     update();
 }

@@ -19,7 +19,7 @@ DialogStart::DialogStart(QWidget *parent) :
 
     ui->spinBoxSquares->setMinimum(25);
     ui->spinBoxSquares->setMaximum(50000);
-    ui->spinBoxSquares->setValue(500);
+    ui->spinBoxSquares->setValue(100);
 
 }
 
@@ -40,9 +40,9 @@ void DialogStart::on_pushButton_released()
 
 void DialogStart::on_pushButton_clicked()
 {
-
     m_animals = ui->spinBoxAnimals->value();
     m_squareMeters = ui->spinBoxSquares->value();
+    m_intervalForRains = ui->spinBoxRainInterval->value();
     emit QDialog::accept();
 }
 

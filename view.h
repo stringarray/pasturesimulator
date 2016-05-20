@@ -7,6 +7,7 @@
 #include <mainwindow.h>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
+#include <QSpinBox>
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -56,10 +57,12 @@ private slots:
     void setupMatrix();
     void rotateLeft();
     void rotateRight();
+    void onPauseButton();
+    void onSpinChange();
 
 private:
     GraphicsView *m_graphicsView;
-    QLabel *label;
+    QLabel *m_labelTitle;
     QToolButton *resetButton;
     QSlider *m_zoomSlider;
     QSlider *rotateSlider;
@@ -73,6 +76,12 @@ private:
     QLabel *m_labelStep;
 
     int m_stepCount;
+    QToolButton *m_pauseButton;
+    int m_intervalForStep;
+    int m_intervalForRain;
+    int m_animalsCount;
+    int m_squaresCount;
+    QSpinBox *m_spinSpeed;
 };
 
 #endif // VIEW_H

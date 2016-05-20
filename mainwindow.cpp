@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
 
-    View *view = new View(this, "Running simulation:");
+    View *view = new View(this, "Corriendo simulación:");
     //view->setMainWindow(this); // tratando de cerrar la aplicacion desde view.
 
     view->view()->setCacheMode(QGraphicsView::CacheBackground);
@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(view);
     setLayout(layout);
 
-    setWindowTitle(tr("Farm simulator"));
+    setWindowTitle(tr("Simulación de campo de engorde"));
 
 
 }
