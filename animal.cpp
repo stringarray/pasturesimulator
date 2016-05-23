@@ -49,21 +49,11 @@
 #include "sqmeter.h"
 
 
-static const double Pi = 3.14159265358979323846264338327950288419717;
-static double TwoPi = 2.0 * Pi;
 
-static qreal normalizeAngle(qreal angle)
-{
-    while (angle < 0)
-        angle += TwoPi;
-    while (angle > TwoPi)
-        angle -= TwoPi;
-    return angle;
-}
 
 //m_speed = m_intervalForStep de View
 Animal::Animal(int id, int speed)
-    : angle(0), m_speed(speed), AnimalEyeDirection(0),
+    : m_speed(speed),
       color(155,90,0)
 {
     //setRotation(qrand() % (360 * 16));
@@ -104,7 +94,7 @@ void Animal::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     painter->scale(0.16, 0.16);
 
     // Body
-    if(m_pesoAnimal >= 0)
+    if(m_pesoAnimal > 0)
     {
 
         painter->drawText(-70, -80, "Id: " + QString::number(this->m_id));
@@ -113,8 +103,6 @@ void Animal::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     else
     {
         this->color = QColor(255, 0, 0);
-
-
         painter->drawText(0, 5, QString::number(this->m_id) + " MUERTA");
     }
     painter->restore();
@@ -125,7 +113,7 @@ void Animal::advance(int step)
     if (!step)
         return;
 
-    if(m_pesoAnimal <= 0)
+    if(m_pesoAnimal == 0)
         return;
 
     QList<SqMeter *> metros;
@@ -151,8 +139,13 @@ void Animal::advance(int step)
     int nuevaPos = qrand() % metros.count();
     //qDebug() << "mover a : " << nuevaPos << " total: " << metros.count();
 
-    moveAnimal(metros.at(nuevaPos)->pos().x()+25, metros.at(nuevaPos)->pos().y()+25 );
 
+
+    if(metros.at(nuevaPos)->m_nivelAgua > 700)
+    {
+       lowerWeight(2);
+
+    }
 
     if(metros.at(nuevaPos)->m_pesoPasto > 0)
     {
@@ -161,8 +154,11 @@ void Animal::advance(int step)
     }
     else
     {
-        m_pesoAnimal--;
+        lowerWeight(1);
     }
+
+    if(m_pesoAnimal > 0)
+        moveAnimal(metros.at(nuevaPos)->pos().x()+25, metros.at(nuevaPos)->pos().y()+25 );
 
  //   qDebug() << "fin items.";
 
@@ -176,8 +172,7 @@ void Animal::advance(int step)
 void Animal::onRain(int mm)
 {
     //qDebug() << "slot on rain triggered on animal: " << m_id << "it rained: " << mm;
-
-    m_pesoAnimal--;
+   lowerWeight(1);
 }
 
 void Animal::moveAnimal(int x, int y)
@@ -205,4 +200,14 @@ void Animal::moveAnimal(int x, int y)
 
     update();
 
+}
+
+void Animal::lowerWeight(int times)
+{
+    for(int i = 0; i < times; i++)
+    {
+        if(m_pesoAnimal > 0){
+            m_pesoAnimal--;
+        }
+    }
 }

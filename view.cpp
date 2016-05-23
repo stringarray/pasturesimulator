@@ -7,6 +7,7 @@
 #include "sqmeter.h"
 #include "crain.h"
 
+
 #ifndef QT_NO_WHEELEVENT
 void GraphicsView::wheelEvent(QWheelEvent *e)
 {
@@ -153,7 +154,7 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
 
     if(result == QDialog::Accepted)
     {
-        //TODO: que se pueda setear la velocidad de la simulacion
+
         m_intervalForStep = 1000;
         m_intervalForRain = dialog.getRainInterval() * 1000;
 
@@ -247,7 +248,7 @@ void View::populateScene(int squareMeters, int amountAnimals)
 
 
     int xx=0;
-    QColor color(55,130,55);
+    QColor color(0,255/2,0);
     for (int i = 0; i < westSide ;i++)
     {
         ++xx;
@@ -258,6 +259,7 @@ void View::populateScene(int squareMeters, int amountAnimals)
             SqMeter *item = new SqMeter(color, xx, yy);
             item->setPos(QPointF(j*50, i*50));
             m_scene->addItem(item);
+            m_myLogger.addSquare(item);
             connect(m_rain, SIGNAL(raining(int)), item, SLOT(onRain(int)));
         }
 
@@ -268,6 +270,7 @@ void View::populateScene(int squareMeters, int amountAnimals)
         SqMeter *item = new SqMeter(color, k, westSide+1);
         item->setPos(QPointF(k*50, westSide*50));
         m_scene->addItem(item);
+        m_myLogger.addSquare(item);
         connect(m_rain, SIGNAL(raining(int)), item, SLOT(onRain(int)));
     }
 
@@ -275,16 +278,16 @@ void View::populateScene(int squareMeters, int amountAnimals)
 
     for (int a = 0; a < amountAnimals; ++a) {
         Animal *animal = new Animal(a, this->m_intervalForStep);
-       // animal->setPos(::sin((a * 6.28) / 10) * 200,
-        //              ::cos((a * 6.28) / 10) * 200);
         animal->setPos(25,25);
         m_scene->addItem(animal);
+        m_myLogger.addAnimal(animal);
         connect(m_rain, SIGNAL(raining(int)), animal, SLOT(onRain(int)));
     }
 
 
     m_advanceTimer = new QTimer;
     QObject::connect(m_advanceTimer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    QObject::connect(m_advanceTimer, SIGNAL(timeout()), &m_myLogger, SLOT(onTimer()));
     m_advanceTimer->start(m_intervalForStep);
 
     //Cada cuantos dias llueve?
@@ -293,10 +296,9 @@ void View::populateScene(int squareMeters, int amountAnimals)
     QObject::connect(m_rainTimer, SIGNAL(timeout()), this, SLOT(onRainTimer()));
     m_rainTimer->start(m_intervalForRain);
 
-    //agregar pastos, hacer 3 corridas una para cada tipo de pasto
+    //agregar tipos de pasto, hacer 3 corridas una para cada tipo de pasto
     //cada pasto tiene una cantidad por metro cuadrado
-    //agregar timer de crecimiento de pasto
-    //agregar timer de vaca que come? o usar advance
+
 }
 
 void View::onTimer()
@@ -307,7 +309,7 @@ void View::onTimer()
         {
             emit m_scene->advance();
             m_stepCount++;
-            this->m_labelStep->setText("Dia: " + QString::number(m_stepCount));
+            this->m_labelStep->setText("Día: " + QString::number(m_stepCount));
         }
     } else { //ya pasaron los 15 meses
         this->m_labelTitle->setText("Simulación finalizada.");
@@ -353,10 +355,11 @@ void View::onPauseButton()
         this->m_pauseButton->setText("Continuar");
         this->m_advanceTimer->stop();
         this->m_rainTimer->stop();
+        this->m_spinSpeed->setEnabled(false);
     } else {
         this->m_pauseButton->setText("Pausar");
-        this->m_advanceTimer->start(m_intervalForStep);
-        this->m_rainTimer->start(m_intervalForRain);
+        this->m_spinSpeed->setEnabled(true);
+        emit m_spinSpeed->valueChanged(m_spinSpeed->value());
     }
 
 }

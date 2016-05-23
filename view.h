@@ -8,6 +8,7 @@
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include <QSpinBox>
+#include "mylogger.h"
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -82,6 +83,7 @@ private:
     int m_animalsCount;
     int m_squaresCount;
     QSpinBox *m_spinSpeed;
+    MyLogger m_myLogger;
 };
 
 #endif // VIEW_H

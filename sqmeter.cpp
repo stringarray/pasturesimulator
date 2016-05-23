@@ -13,6 +13,7 @@ SqMeter::SqMeter(const QColor &color, int x, int y)
     setAcceptHoverEvents(true);
 
     this->m_pesoPasto = 50;
+    this->m_nivelAgua = 500;
 }
 
 QRectF SqMeter::boundingRect() const
@@ -81,7 +82,7 @@ void SqMeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
         painter->scale(0.12, 0.12);
         painter->drawText(20, 60, QString("Hectárea en posición (%1, %2)").arg(x).arg(y));
         painter->drawText(20, 100, QString("Pasto: ") + QString::number(m_pesoPasto));
-       // painter->drawText(10, 220, QString("TODO: Mas características"));
+        painter->drawText(20, 140, QString("Agua: ") + QString::number(m_nivelAgua));
         painter->restore();
     }
 
@@ -102,22 +103,68 @@ void SqMeter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void SqMeter::onRain(int mm)
 {
    // qDebug() << "llovio sobre el pasto en: (" << this->x << ", " << this->y << ")";
-    this->color = color.lighter(105);
-    this->m_pesoPasto++;
+    //this->color = color.lighter(105);
+    this->m_nivelAgua+=2;
+
+    if(this->m_nivelAgua > 200)
+        this->m_pesoPasto+=2;
+
+
+
+    this->color = getColor();
+
     update();
 }
 
 void SqMeter::consumeGrass()
 {
   //  qDebug() << "pasto consumido en (" << this->x << ", " << this->y << ")";
-    this->color = color.darker(110);
-    this->m_pesoPasto-=5;
+    //this->color = color.darker(110);
+    this->m_pesoPasto-=4;
+    this->m_nivelAgua+=2;
+
+    this->color = getColor();
+
     update();
+}
+
+QColor SqMeter::getColor()
+{
+
+    if(m_nivelAgua > 700)
+    {
+       // qDebug() << this->m_nivelAgua;
+         return QColor(0,128,255);
+    }
+    else
+    {
+        float peso = m_pesoPasto;
+        float green = (peso /100.0) * 255.0;
+        float red =  ((peso /100.0) * 100.0);
+        //qDebug() << "red " << red << " green " << green;
+
+        if(green < 0) green = 0;
+        if(red < 0) red = 0;
+        if(green > 255) green = 255;
+        if(red > 255) red = 255;
+
+        if(green < 10){
+            return QColor(red, green, 0);
+        }else {
+            return QColor(0, green, 0);
+        }
+    }
 }
 
 void SqMeter::advance(int step)
 {
     if (!step)
         return;
+
+    m_nivelAgua--;
+
+    if(this->m_nivelAgua < 200) this->m_pesoPasto--;
+
+    update();
 }
 

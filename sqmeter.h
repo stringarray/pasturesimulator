@@ -29,6 +29,7 @@ public:
 
 
     int m_pesoPasto;
+    int m_nivelAgua;
 
 public slots:
     void onRain(int mm);
@@ -37,6 +38,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
     void advance(int step) Q_DECL_OVERRIDE;
+    QColor getColor();
 
 private:
     int x;

@@ -65,14 +65,15 @@ public slots:
 protected:
     void advance(int step) Q_DECL_OVERRIDE;
     int m_id;
+
+    void lowerWeight(int times);
 private:
-    qreal angle;
+
     int m_speed;
-    qreal AnimalEyeDirection;
     QColor color;
     int m_peso;
     QPropertyAnimation *animation;
-    QSequentialAnimationGroup *group;
+
 
 };
 
