@@ -37,6 +37,9 @@ int main(int argc, char *argv[])
     //app.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
     MainWindow window;
+    if(window.getMustClose()){
+        return 0;
+    }
 
 
     return app.exec();

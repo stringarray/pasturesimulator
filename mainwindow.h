@@ -17,13 +17,15 @@ public:
 
      int getSquareMeters(){return m_squareMeters;}
      void setSquareMeters(int meters){m_squareMeters = meters;}
+     void setMustClose(bool mustClose);
+     bool getMustClose(){return m_mustClose;}
 
 public slots:
 
 private:
 
      int m_squareMeters;
-     QTimer *timer;
+     bool m_mustClose;
 
 };
 

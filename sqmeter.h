@@ -19,13 +19,17 @@ public:
     void consumeGrass();
     int getX(){return x;}
     int getY(){return y;}
+    void lowerGrassWeight(int times);
+    void raiseGrassWeight(int times);
+    void lowerWaterLevel(int times);
+    void raiseWaterLevel(int times);
 
-/* Pasto guinea (Panicum máximum) Ofrece 13 Ton de F.S/Ha/año con N de 35 Ton de F.S/Ha/año
-* Pasto carimagua (Andropogon gayanus) Ofrece de 17 Ton F.S/Ha/año con N de 17
-* Pasto alemán (Echinochloa polystachya) de 9 Ton de F.S/Ha/año. con N de 22 Ton de F.S/Ha/año
+/* Pasto guinea (Panicum máximum) Ofrece 13 Ton de F.S/Ha/año con N 35 Ton de F.S/Ha/año
+*  Pasto carimagua (Andropogon gayanus) Ofrece 17 Ton F.S/Ha/año con N 17
+*  Pasto alemán (Echinochloa polystachya) 9 Ton de F.S/Ha/año. con N 22 Ton de F.S/Ha/año
 
 */
-    enum tipoPasto { guinea, carimagua, aleman };
+    enum tipoPasto { GUINEA, CARIMAGUA, ALEMAN };
 
 
     int m_pesoPasto;

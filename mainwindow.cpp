@@ -14,7 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     View *view = new View(this, "Corriendo simulación:");
-    //view->setMainWindow(this); // tratando de cerrar la aplicacion desde view.
+    if(this->getMustClose()){
+        this->close();
+    }
 
     view->view()->setCacheMode(QGraphicsView::CacheBackground);
     view->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
@@ -29,6 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("Simulación de campo de engorde"));
 
 
+}
+
+void MainWindow::setMustClose(bool mustClose)
+{
+    this->m_mustClose = mustClose;
 }
 
 MainWindow::~MainWindow()

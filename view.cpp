@@ -27,7 +27,10 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
     : QFrame(parent)
 {
 
+
     m_scene = NULL;
+    m_advanceTimer = NULL;
+    m_rainTimer = NULL;
 
     setFrameStyle(Sunken | StyledPanel);
     m_graphicsView = new GraphicsView(this);
@@ -158,22 +161,43 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
         m_intervalForStep = 1000;
         m_intervalForRain = dialog.getRainInterval() * 1000;
 
-        //TODO: usar estas variables para logging, por ahora no se usan
-        m_animalsCount = dialog.getAnimals();
-        m_squaresCount = dialog.getSqMeters();
-
         populateScene(dialog.getSqMeters(), dialog.getAnimals());
+
         this->view()->setScene(m_scene);
+        theMainWindow->setMustClose(false);
         theMainWindow->show();
     }
     else
     {
        // TODO: close application without crash
-        theMainWindow->close();
-        this->close();
-        emit QApplication::quit();
+        theMainWindow->setMustClose(true);
+
+        //this->close();
+
+
 
     }
+}
+
+View::~View()
+{
+    if(m_scene != NULL){
+        m_scene->clear();
+        m_scene->deleteLater();
+    }
+    delete m_graphicsView;
+    delete m_labelTitle;
+    delete resetButton;
+    delete m_zoomSlider;
+    delete rotateSlider;
+
+    delete m_rain;
+    if(m_rainTimer != NULL) delete m_rainTimer;
+    if(m_advanceTimer != NULL) delete m_advanceTimer;
+    delete m_labelRain;
+    delete m_labelStep;
+    delete m_pauseButton;
+    delete m_spinSpeed;
 }
 
 QGraphicsView *View::view() const

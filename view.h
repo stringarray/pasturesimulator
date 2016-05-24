@@ -40,6 +40,7 @@ class View : public QFrame
     Q_OBJECT
 public:
     explicit View(MainWindow *theMainWindow, const QString &name, QWidget *parent = 0);
+    ~View();
     QGraphicsView *view() const;
     void populateScene(int squareMeters, int amountAnimals);
     void getSides(int sqMeters, int &w, int &n, int &r);
@@ -80,8 +81,6 @@ private:
     QToolButton *m_pauseButton;
     int m_intervalForStep;
     int m_intervalForRain;
-    int m_animalsCount;
-    int m_squaresCount;
     QSpinBox *m_spinSpeed;
     MyLogger m_myLogger;
 };

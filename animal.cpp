@@ -64,6 +64,11 @@ Animal::Animal(int id, int speed)
     this->m_pesoAnimal = 20;
 }
 
+Animal::~Animal()
+{
+
+}
+
 QRectF Animal::boundingRect() const
 {
     qreal adjust = 0.5;
@@ -188,15 +193,15 @@ void Animal::moveAnimal(int x, int y)
     endPosition.setX(x);
     endPosition.setY(y);
 
-    animation = new QPropertyAnimation(this, "pos");
-    animation->setStartValue(startPosition);
-    animation->setEasingCurve(QEasingCurve::OutCubic);
-    animation->setDuration(m_speed/3); // 1/3 seconds
-    animation->setEndValue(endPosition);
+    m_animation = new QPropertyAnimation(this, "pos");
+    m_animation->setStartValue(startPosition);
+    m_animation->setEasingCurve(QEasingCurve::OutCubic);
+    m_animation->setDuration(m_speed/3); // 1/3 seconds
+    m_animation->setEndValue(endPosition);
 
 
 //    qDebug() << "start animation x: " << x << "y: " << y;
-    animation->start(QPropertyAnimation::DeleteWhenStopped);
+    m_animation->start(QPropertyAnimation::DeleteWhenStopped);
 
     update();
 

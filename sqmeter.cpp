@@ -104,10 +104,10 @@ void SqMeter::onRain(int mm)
 {
    // qDebug() << "llovio sobre el pasto en: (" << this->x << ", " << this->y << ")";
     //this->color = color.lighter(105);
-    this->m_nivelAgua+=2;
+    raiseWaterLevel(2);
 
     if(this->m_nivelAgua > 200)
-        this->m_pesoPasto+=2;
+        raiseGrassWeight(2);
 
 
 
@@ -120,8 +120,8 @@ void SqMeter::consumeGrass()
 {
   //  qDebug() << "pasto consumido en (" << this->x << ", " << this->y << ")";
     //this->color = color.darker(110);
-    this->m_pesoPasto-=4;
-    this->m_nivelAgua+=2;
+    lowerGrassWeight(4);
+    //this->m_nivelAgua+=2; ????
 
     this->color = getColor();
 
@@ -161,10 +161,51 @@ void SqMeter::advance(int step)
     if (!step)
         return;
 
-    m_nivelAgua--;
+    lowerWaterLevel(1);
 
-    if(this->m_nivelAgua < 200) this->m_pesoPasto--;
+    if(this->m_nivelAgua < 200) {
+        lowerGrassWeight(1);
+    }
 
     update();
 }
 
+void SqMeter::lowerGrassWeight(int times)
+{
+    for(int i = 0; i < times; i++)
+    {
+        if(m_pesoPasto > 0){
+            m_pesoPasto--;
+        }
+    }
+}
+
+void SqMeter::raiseGrassWeight(int times)
+{
+    for(int i = 0; i < times; i++)
+    {
+        if(m_pesoPasto < 100){
+            m_pesoPasto++;
+        }
+    }
+}
+
+void SqMeter::lowerWaterLevel(int times)
+{
+    for(int i = 0; i < times; i++)
+    {
+        if(m_nivelAgua > 0){
+            m_nivelAgua--;
+        }
+    }
+}
+
+void SqMeter::raiseWaterLevel(int times)
+{
+    for(int i = 0; i < times; i++)
+    {
+        if(m_nivelAgua < 1000){
+            m_nivelAgua++;
+        }
+    }
+}
