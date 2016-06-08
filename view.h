@@ -39,18 +39,27 @@ class View : public QFrame
 {
     Q_OBJECT
 public:
-    explicit View(MainWindow *theMainWindow, const QString &name, QWidget *parent = 0);
+    explicit View(const QString &name, QWidget *parent = 0);
     ~View();
     QGraphicsView *view() const;
     void populateScene(int squareMeters, int amountAnimals);
     void getSides(int sqMeters, int &w, int &n, int &r);
-    //void setMainWindow(MainWindow *w){this->theMainWindow = w;}
+
+    int getIntervalForStep(){return m_intervalForStep;}
+    void setIntervalForStep(int step){m_intervalForStep = step;}
+    int getIntervalForRain(){return m_intervalForRain;}
+    void setIntervalForRain(int rainInterval){m_intervalForRain = rainInterval;}
+    int getSpeed(){return m_speed;}
+    void setSpeed(int speed){m_speed = speed;}
 
 public slots:
     void zoomIn(int level = 1);
     void zoomOut(int level = 1);
     void onTimer();
     void onRainTimer();
+
+signals:
+    void simulationFinished();
 
 private slots:
     void resetView();
@@ -83,6 +92,7 @@ private:
     int m_intervalForRain;
     QSpinBox *m_spinSpeed;
     MyLogger m_myLogger;
+    int m_speed;
 };
 
 #endif // VIEW_H

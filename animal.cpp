@@ -146,19 +146,20 @@ void Animal::advance(int step)
 
 
 
-    if(metros.at(nuevaPos)->m_nivelAgua > 700)
+    if(metros.at(nuevaPos)->getNivelAgua() > FLOOD_LEVEL)
     {
        lowerWeight(2);
 
     }
 
-    if(metros.at(nuevaPos)->m_pesoPasto > 0)
+
+    if(metros.at(nuevaPos)->getPesoPasto_0() > 5)
     {
         metros.at(nuevaPos)->consumeGrass();
         m_pesoAnimal++;
-    }
-    else
-    {
+
+    } else {
+
         lowerWeight(1);
     }
 
@@ -177,7 +178,7 @@ void Animal::advance(int step)
 void Animal::onRain(int mm)
 {
     //qDebug() << "slot on rain triggered on animal: " << m_id << "it rained: " << mm;
-   lowerWeight(1);
+   lowerWeight(2);
 }
 
 void Animal::moveAnimal(int x, int y)

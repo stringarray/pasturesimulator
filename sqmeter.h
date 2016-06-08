@@ -5,9 +5,18 @@
 #include <QGraphicsItem>
 #include <QGraphicsObject>
 
-class SqMeter : public QGraphicsObject
+const int FLOOD_LEVEL = 500;
+const int HUMID_LEVEL = 100;
 
-//class SqMeter :  public QObject, public QGraphicsItem
+/*
+*  Pasto carimagua (Andropogon gayanus) Ofrece 17 Ton F.S/Ha/año con N 17
+*  Pasto alemán (Echinochloa polystachya) 9 Ton de F.S/Ha/año. con N 22 Ton de F.S/Ha/año
+*  Pasto guinea (Panicum máximum) Ofrece 13 Ton de F.S/Ha/año con N 35 Ton de F.S/Ha/año
+*/
+
+
+
+class SqMeter : public QGraphicsObject
 {
     Q_OBJECT
 public:
@@ -19,21 +28,10 @@ public:
     void consumeGrass();
     int getX(){return x;}
     int getY(){return y;}
-    void lowerGrassWeight(int times);
-    void raiseGrassWeight(int times);
-    void lowerWaterLevel(int times);
-    void raiseWaterLevel(int times);
 
-/* Pasto guinea (Panicum máximum) Ofrece 13 Ton de F.S/Ha/año con N 35 Ton de F.S/Ha/año
-*  Pasto carimagua (Andropogon gayanus) Ofrece 17 Ton F.S/Ha/año con N 17
-*  Pasto alemán (Echinochloa polystachya) 9 Ton de F.S/Ha/año. con N 22 Ton de F.S/Ha/año
+    int getPesoPasto_0(){return m_pesoPasto_0;}
+    int getNivelAgua(){return m_nivelAgua;}
 
-*/
-    enum tipoPasto { GUINEA, CARIMAGUA, ALEMAN };
-
-
-    int m_pesoPasto;
-    int m_nivelAgua;
 
 public slots:
     void onRain(int mm);
@@ -48,6 +46,14 @@ private:
     int x;
     int y;
     QColor color;
+
+    int m_pesoPasto_0;
+    int m_nivelAgua;
+
+    void lowerWaterLevel(int times);
+    void raiseWaterLevel(int times);
+    void lowerGrassWeight_0(int times);
+    void raiseGrassWeight_0(int times);
 
 };
 

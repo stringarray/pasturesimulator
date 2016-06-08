@@ -21,11 +21,18 @@ public:
      bool getMustClose(){return m_mustClose;}
 
 public slots:
+     void onSimulationFinished();
+     void onLastSimulationFinished();
 
 private:
 
      int m_squareMeters;
      bool m_mustClose;
+     bool m_isAleman;
+     int m_amountAnimals;
+     int m_amountSquares;
+     int m_rainInterval;
+     int m_speed;
 
 };
 

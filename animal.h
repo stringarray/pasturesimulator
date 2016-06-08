@@ -72,7 +72,6 @@ private:
 
     int m_speed;
     QColor color;
-    int m_peso;
     QPropertyAnimation *m_animation;
 
 

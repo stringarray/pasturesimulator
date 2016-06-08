@@ -2,10 +2,11 @@
 
 #include <QtWidgets>
 #include <qmath.h>
-#include "dialogstart.h"
+
 #include "animal.h"
 #include "sqmeter.h"
 #include "crain.h"
+
 
 
 #ifndef QT_NO_WHEELEVENT
@@ -23,10 +24,9 @@ void GraphicsView::wheelEvent(QWheelEvent *e)
 }
 #endif
 
-View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
+View::View(const QString &name, QWidget *parent)
     : QFrame(parent)
 {
-
 
     m_scene = NULL;
     m_advanceTimer = NULL;
@@ -113,7 +113,7 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
     labelLayout->addWidget(m_pauseButton);
 
     m_spinSpeed = new QSpinBox();
-    m_spinSpeed->setMaximum(10);
+    m_spinSpeed->setMaximum(30);
     m_spinSpeed->setMinimum(1);
     m_spinSpeed->setValue(1);
     QLabel *speed = new QLabel("Velocidad: ");
@@ -152,31 +152,9 @@ View::View(MainWindow *theMainWindow, const QString &name, QWidget *parent)
 
     setupMatrix();
 
-    DialogStart dialog;
-    int result = dialog.exec();
-
-    if(result == QDialog::Accepted)
-    {
-
-        m_intervalForStep = 1000;
-        m_intervalForRain = dialog.getRainInterval() * 1000;
-
-        populateScene(dialog.getSqMeters(), dialog.getAnimals());
-
-        this->view()->setScene(m_scene);
-        theMainWindow->setMustClose(false);
-        theMainWindow->show();
-    }
-    else
-    {
-       // TODO: close application without crash
-        theMainWindow->setMustClose(true);
-
-        //this->close();
 
 
 
-    }
 }
 
 View::~View()
@@ -314,14 +292,17 @@ void View::populateScene(int squareMeters, int amountAnimals)
     QObject::connect(m_advanceTimer, SIGNAL(timeout()), &m_myLogger, SLOT(onTimer()));
     m_advanceTimer->start(m_intervalForStep);
 
-    //Cada cuantos dias llueve?
+
     m_rainTimer = new QTimer;
     QObject::connect(m_rainTimer, SIGNAL(timeout()), m_rain, SLOT(onTimer()));
     QObject::connect(m_rainTimer, SIGNAL(timeout()), this, SLOT(onRainTimer()));
     m_rainTimer->start(m_intervalForRain);
 
-    //agregar tipos de pasto, hacer 3 corridas una para cada tipo de pasto
-    //cada pasto tiene una cantidad por metro cuadrado
+    this->view()->setScene(m_scene);
+
+    this->m_spinSpeed->setValue(getSpeed());
+    emit m_spinSpeed->valueChanged(m_spinSpeed->value());
+
 
 }
 
@@ -339,6 +320,13 @@ void View::onTimer()
         this->m_labelTitle->setText("Simulación finalizada.");
         m_advanceTimer->stop();
         m_rainTimer->stop();
+        //TODO: mostrar resultados
+        //DialogResults dialogResults;
+        //dialogResults.exec();
+        this->setVisible(false);
+        setSpeed(m_spinSpeed->value()); //so i can start next simulation at the same speed
+        emit simulationFinished();
+
     }
 
 }

@@ -1,6 +1,8 @@
 #include "sqmeter.h"
 #include <QtWidgets>
 
+
+
 SqMeter::SqMeter(const QColor &color, int x, int y)
 {
 
@@ -12,8 +14,8 @@ SqMeter::SqMeter(const QColor &color, int x, int y)
     setFlags( ItemIsSelectable );
     setAcceptHoverEvents(true);
 
-    this->m_pesoPasto = 50;
-    this->m_nivelAgua = 500;
+    this->m_pesoPasto_0 = 50;
+    this->m_nivelAgua = 300;
 }
 
 QRectF SqMeter::boundingRect() const
@@ -81,7 +83,7 @@ void SqMeter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
         painter->setPen(QColor(255,255,255));
         painter->scale(0.12, 0.12);
         painter->drawText(20, 60, QString("Hectárea en posición (%1, %2)").arg(x).arg(y));
-        painter->drawText(20, 100, QString("Pasto: ") + QString::number(m_pesoPasto));
+        painter->drawText(20, 100, QString("Pasto: ") + QString::number(m_pesoPasto_0));
         painter->drawText(20, 140, QString("Agua: ") + QString::number(m_nivelAgua));
         painter->restore();
     }
@@ -104,10 +106,13 @@ void SqMeter::onRain(int mm)
 {
    // qDebug() << "llovio sobre el pasto en: (" << this->x << ", " << this->y << ")";
     //this->color = color.lighter(105);
-    raiseWaterLevel(2);
+    raiseWaterLevel(4);
 
-    if(this->m_nivelAgua > 200)
-        raiseGrassWeight(2);
+    if(this->m_nivelAgua > HUMID_LEVEL)
+        raiseGrassWeight_0(1);
+
+    if(this->m_nivelAgua > FLOOD_LEVEL)
+        lowerGrassWeight_0(1);
 
 
 
@@ -120,7 +125,7 @@ void SqMeter::consumeGrass()
 {
   //  qDebug() << "pasto consumido en (" << this->x << ", " << this->y << ")";
     //this->color = color.darker(110);
-    lowerGrassWeight(4);
+    lowerGrassWeight_0(3);
     //this->m_nivelAgua+=2; ????
 
     this->color = getColor();
@@ -131,14 +136,14 @@ void SqMeter::consumeGrass()
 QColor SqMeter::getColor()
 {
 
-    if(m_nivelAgua > 700)
+    if(m_nivelAgua > FLOOD_LEVEL)
     {
        // qDebug() << this->m_nivelAgua;
          return QColor(0,128,255);
     }
     else
     {
-        float peso = m_pesoPasto;
+        float peso = m_pesoPasto_0;
         float green = (peso /100.0) * 255.0;
         float red =  ((peso /100.0) * 100.0);
         //qDebug() << "red " << red << " green " << green;
@@ -163,29 +168,32 @@ void SqMeter::advance(int step)
 
     lowerWaterLevel(1);
 
-    if(this->m_nivelAgua < 200) {
-        lowerGrassWeight(1);
+    if(this->m_nivelAgua < HUMID_LEVEL) {
+        lowerGrassWeight_0(1);
+    }
+    else if (this->m_nivelAgua > FLOOD_LEVEL) {
+        lowerGrassWeight_0(1);
     }
 
     update();
 }
 
-void SqMeter::lowerGrassWeight(int times)
+void SqMeter::lowerGrassWeight_0(int times)
 {
     for(int i = 0; i < times; i++)
     {
-        if(m_pesoPasto > 0){
-            m_pesoPasto--;
+        if(m_pesoPasto_0 > 0){
+            m_pesoPasto_0--;
         }
     }
 }
 
-void SqMeter::raiseGrassWeight(int times)
+void SqMeter::raiseGrassWeight_0(int times)
 {
     for(int i = 0; i < times; i++)
     {
-        if(m_pesoPasto < 100){
-            m_pesoPasto++;
+        if(m_pesoPasto_0 < 100){
+            m_pesoPasto_0++;
         }
     }
 }

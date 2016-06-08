@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     animal.cpp \
     dialogstart.cpp \
     crain.cpp \
-    mylogger.cpp
+    mylogger.cpp \
+    dialogresults.cpp
 
 RESOURCES += \
     resources.qrc
@@ -19,10 +20,12 @@ HEADERS += \
     animal.h \
     dialogstart.h \
     crain.h \
-    mylogger.h
+    mylogger.h \
+    dialogresults.h
 
 FORMS += \
-    dialogstart.ui
+    dialogstart.ui \
+    dialogresults.ui
 
 DISTFILES += \
     simulatormodel.qmodel
