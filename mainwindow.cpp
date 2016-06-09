@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     DialogStart dialog;
 
 
+
+
     int result = dialog.exec();
 
     if(result == QDialog::Accepted)
@@ -49,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
         connect(m_viewList.at(0), SIGNAL(simulationFinished()), this, SLOT(onSimulationFinished()));
 
         setMustClose(false);
+        this->setWindowState(this->windowState() | Qt::WindowMaximized );
         this->show();
 
     }

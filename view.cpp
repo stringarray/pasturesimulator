@@ -160,7 +160,9 @@ View::View(const QString &name, QWidget *parent, tipoPasto TIPOPASTO)
 
 View::~View()
 {
+    qDebug() << "View destructor";
     if(m_scene != NULL){
+        qDebug() << "View destructor delete scene later";
         m_scene->clear();
         m_scene->deleteLater();
     }
