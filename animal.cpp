@@ -146,7 +146,7 @@ void Animal::advance(int step)
 
 
 
-    if(metros.at(nuevaPos)->getNivelAgua() > FLOOD_LEVEL)
+    if(metros.at(nuevaPos)->getNivelAgua() > metros.at(nuevaPos)->getFloodLevel())
     {
        lowerWeight(2);
 

@@ -4,9 +4,8 @@
 #include <QColor>
 #include <QGraphicsItem>
 #include <QGraphicsObject>
+#include "mainwindow.h"
 
-const int FLOOD_LEVEL = 500;
-const int HUMID_LEVEL = 100;
 
 /*
 *  Pasto carimagua (Andropogon gayanus) Ofrece 17 Ton F.S/Ha/año con N 17
@@ -20,7 +19,7 @@ class SqMeter : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    SqMeter(const QColor &color, int x, int y);
+    SqMeter(const QColor &color, int x, int y, tipoPasto TIPOPASTO);
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     QPainterPath shape() const Q_DECL_OVERRIDE;
@@ -31,6 +30,7 @@ public:
 
     int getPesoPasto_0(){return m_pesoPasto_0;}
     int getNivelAgua(){return m_nivelAgua;}
+    int getFloodLevel(){return FLOOD_LEVEL;}
 
 
 public slots:
@@ -54,6 +54,8 @@ private:
     void raiseWaterLevel(int times);
     void lowerGrassWeight_0(int times);
     void raiseGrassWeight_0(int times);
+    int FLOOD_LEVEL;
+    int HUMID_LEVEL;
 
 };
 

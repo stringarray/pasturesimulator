@@ -3,7 +3,7 @@
 
 
 
-SqMeter::SqMeter(const QColor &color, int x, int y)
+SqMeter::SqMeter(const QColor &color, int x, int y, tipoPasto TIPOPASTO)
 {
 
     this->x = x;
@@ -16,6 +16,22 @@ SqMeter::SqMeter(const QColor &color, int x, int y)
 
     this->m_pesoPasto_0 = 50;
     this->m_nivelAgua = 300;
+    switch (TIPOPASTO)
+    {
+    case CARIMAGUA:
+        FLOOD_LEVEL = 400;
+        HUMID_LEVEL = 0;
+        break;
+    case ALEMAN:
+        FLOOD_LEVEL = 800;
+        HUMID_LEVEL = 400;
+        break;
+    case GUINEA:
+        FLOOD_LEVEL = 600;
+        HUMID_LEVEL = 200;
+        break;
+
+    }
 }
 
 QRectF SqMeter::boundingRect() const
@@ -106,7 +122,7 @@ void SqMeter::onRain(int mm)
 {
    // qDebug() << "llovio sobre el pasto en: (" << this->x << ", " << this->y << ")";
     //this->color = color.lighter(105);
-    raiseWaterLevel(4);
+    raiseWaterLevel(8);
 
     if(this->m_nivelAgua > HUMID_LEVEL)
         raiseGrassWeight_0(1);

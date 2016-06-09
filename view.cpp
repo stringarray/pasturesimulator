@@ -24,13 +24,14 @@ void GraphicsView::wheelEvent(QWheelEvent *e)
 }
 #endif
 
-View::View(const QString &name, QWidget *parent)
+View::View(const QString &name, QWidget *parent, tipoPasto TIPOPASTO)
     : QFrame(parent)
 {
 
     m_scene = NULL;
     m_advanceTimer = NULL;
     m_rainTimer = NULL;
+    M_TIPOPASTO = TIPOPASTO;
 
     setFrameStyle(Sunken | StyledPanel);
     m_graphicsView = new GraphicsView(this);
@@ -152,7 +153,7 @@ View::View(const QString &name, QWidget *parent)
 
     setupMatrix();
 
-
+    m_myLogger = new MyLogger(this, M_TIPOPASTO);
 
 
 }
@@ -176,6 +177,7 @@ View::~View()
     delete m_labelStep;
     delete m_pauseButton;
     delete m_spinSpeed;
+    delete m_myLogger;
 }
 
 QGraphicsView *View::view() const
@@ -258,10 +260,10 @@ void View::populateScene(int squareMeters, int amountAnimals)
         for (int j = 0; j < northSide; j++)
         {
             ++yy;
-            SqMeter *item = new SqMeter(color, xx, yy);
+            SqMeter *item = new SqMeter(color, xx, yy, this->getTipoPasto());
             item->setPos(QPointF(j*50, i*50));
             m_scene->addItem(item);
-            m_myLogger.addSquare(item);
+            m_myLogger->addSquare(item);
             connect(m_rain, SIGNAL(raining(int)), item, SLOT(onRain(int)));
         }
 
@@ -269,10 +271,10 @@ void View::populateScene(int squareMeters, int amountAnimals)
 
     for (int k = 0; k < resto; k++)
     {
-        SqMeter *item = new SqMeter(color, k, westSide+1);
+        SqMeter *item = new SqMeter(color, k, westSide+1, this->getTipoPasto());
         item->setPos(QPointF(k*50, westSide*50));
         m_scene->addItem(item);
-        m_myLogger.addSquare(item);
+        m_myLogger->addSquare(item);
         connect(m_rain, SIGNAL(raining(int)), item, SLOT(onRain(int)));
     }
 
@@ -282,14 +284,14 @@ void View::populateScene(int squareMeters, int amountAnimals)
         Animal *animal = new Animal(a, this->m_intervalForStep);
         animal->setPos(25,25);
         m_scene->addItem(animal);
-        m_myLogger.addAnimal(animal);
+        m_myLogger->addAnimal(animal);
         connect(m_rain, SIGNAL(raining(int)), animal, SLOT(onRain(int)));
     }
 
 
     m_advanceTimer = new QTimer;
     QObject::connect(m_advanceTimer, SIGNAL(timeout()), this, SLOT(onTimer()));
-    QObject::connect(m_advanceTimer, SIGNAL(timeout()), &m_myLogger, SLOT(onTimer()));
+    QObject::connect(m_advanceTimer, SIGNAL(timeout()), m_myLogger, SLOT(onTimer()));
     m_advanceTimer->start(m_intervalForStep);
 
 
@@ -320,9 +322,7 @@ void View::onTimer()
         this->m_labelTitle->setText("Simulación finalizada.");
         m_advanceTimer->stop();
         m_rainTimer->stop();
-        //TODO: mostrar resultados
-        //DialogResults dialogResults;
-        //dialogResults.exec();
+
         this->setVisible(false);
         setSpeed(m_spinSpeed->value()); //so i can start next simulation at the same speed
         emit simulationFinished();

@@ -3,11 +3,15 @@
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include <QMetaEnum>
 
-MyLogger::MyLogger(QObject *parent) : QObject(parent)
+MyLogger::MyLogger(QObject *parent, tipoPasto TIPOPASTO) : QObject(parent)
 {
     m_currentDay = 1;
-    m_fileAnimals.setFileName("animals.csv");
+
+    QString filename = QString::number(TIPOPASTO) + "_simulation.csv";;
+
+    m_fileAnimals.setFileName(filename);
     if(m_fileAnimals.exists())
         m_fileAnimals.remove();
 

@@ -39,7 +39,7 @@ class View : public QFrame
 {
     Q_OBJECT
 public:
-    explicit View(const QString &name, QWidget *parent = 0);
+    explicit View(const QString &name, QWidget *parent, tipoPasto TIPOPASTO);
     ~View();
     QGraphicsView *view() const;
     void populateScene(int squareMeters, int amountAnimals);
@@ -51,6 +51,8 @@ public:
     void setIntervalForRain(int rainInterval){m_intervalForRain = rainInterval;}
     int getSpeed(){return m_speed;}
     void setSpeed(int speed){m_speed = speed;}
+    void setTipoPasto(tipoPasto t){M_TIPOPASTO = t;}
+    tipoPasto getTipoPasto(){return M_TIPOPASTO;}
 
 public slots:
     void zoomIn(int level = 1);
@@ -91,8 +93,9 @@ private:
     int m_intervalForStep;
     int m_intervalForRain;
     QSpinBox *m_spinSpeed;
-    MyLogger m_myLogger;
+    MyLogger *m_myLogger;
     int m_speed;
+    tipoPasto M_TIPOPASTO;
 };
 
 #endif // VIEW_H

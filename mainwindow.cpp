@@ -10,12 +10,15 @@
 #include "dialogstart.h"
 #include "dialogresults.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
 
     m_isAleman = true;
     DialogStart dialog;
+
 
     int result = dialog.exec();
 
@@ -26,24 +29,24 @@ MainWindow::MainWindow(QWidget *parent)
         m_amountSquares = dialog.getSqMeters();
         m_rainInterval = dialog.getRainInterval() * 1000;
 
-        View *view = new View("Simulación pasto Carimagua");
-        view->view()->setCacheMode(QGraphicsView::CacheBackground);
-        view->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-        view->view()->setDragMode(QGraphicsView::ScrollHandDrag);
-        view->view()->setBackgroundBrush(QPixmap(":/images/grass01.png"));
-        view->setIntervalForStep(1000);
-        view->setIntervalForRain(m_rainInterval);
-        view->setSpeed(1);
-        view->populateScene(m_amountSquares, m_amountAnimals);
+        m_viewList.append( new View("Simulación pasto Carimagua", this, CARIMAGUA));
+        m_viewList.at(0)->view()->setCacheMode(QGraphicsView::CacheBackground);
+        m_viewList.at(0)->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+        m_viewList.at(0)->view()->setDragMode(QGraphicsView::ScrollHandDrag);
+        m_viewList.at(0)->view()->setBackgroundBrush(QPixmap(":/images/andropogon_carimagua.png"));
+        m_viewList.at(0)->setIntervalForStep(1000);
+        m_viewList.at(0)->setIntervalForRain(m_rainInterval);
+        m_viewList.at(0)->setSpeed(1);
+        m_viewList.at(0)->populateScene(m_amountSquares, m_amountAnimals);
 
 
         QHBoxLayout *layout = new QHBoxLayout;
-        layout->addWidget(view);
+        layout->addWidget(m_viewList.at(0));
         setLayout(layout);
 
         setWindowTitle(tr("Simulación de campos de engorde"));
 
-        connect(view, SIGNAL(simulationFinished()), this, SLOT(onSimulationFinished()));
+        connect(m_viewList.at(0), SIGNAL(simulationFinished()), this, SLOT(onSimulationFinished()));
 
         setMustClose(false);
         this->show();
@@ -80,40 +83,40 @@ void MainWindow::onSimulationFinished()
     if(m_isAleman == true)
     {
         qDebug() << "termino la uno";
-        View *view = new View("Simulación pasto Alemán");
-        view->view()->setCacheMode(QGraphicsView::CacheBackground);
-        view->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-        view->view()->setDragMode(QGraphicsView::ScrollHandDrag);
-        view->view()->setBackgroundBrush(QPixmap(":/images/grass01.png"));
-        view->setIntervalForStep(1000);
-        view->setIntervalForRain(m_rainInterval);
-        view->setSpeed(previousView->getSpeed());
-        view->populateScene(m_amountSquares, m_amountAnimals);
+        m_viewList.append( new View("Simulación pasto Alemán", this, ALEMAN));
+        m_viewList.at(1)->view()->setCacheMode(QGraphicsView::CacheBackground);
+        m_viewList.at(1)->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+        m_viewList.at(1)->view()->setDragMode(QGraphicsView::ScrollHandDrag);
+        m_viewList.at(1)->view()->setBackgroundBrush(QPixmap(":/images/echinochloa_aleman.png"));
+        m_viewList.at(1)->setIntervalForStep(1000);
+        m_viewList.at(1)->setIntervalForRain(m_rainInterval);
+        m_viewList.at(1)->setSpeed(previousView->getSpeed());
+        m_viewList.at(1)->populateScene(m_amountSquares, m_amountAnimals);
 
 
-        this->layout()->addWidget(view);
+        this->layout()->addWidget(m_viewList.at(1));
 
 
-        connect(view, SIGNAL(simulationFinished()), this, SLOT(onSimulationFinished()));
+        connect(m_viewList.at(1), SIGNAL(simulationFinished()), this, SLOT(onSimulationFinished()));
         m_isAleman = false;
     }
     else
     {
         qDebug() << "termino la dos";
-        View *view = new View("Simulación pasto Guinea");
-        view->view()->setCacheMode(QGraphicsView::CacheBackground);
-        view->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-        view->view()->setDragMode(QGraphicsView::ScrollHandDrag);
-        view->view()->setBackgroundBrush(QPixmap(":/images/grass01.png"));
-        view->setIntervalForStep(1000);
-        view->setIntervalForRain(m_rainInterval);
-        view->setSpeed(previousView->getSpeed());
-        view->populateScene(m_amountSquares, m_amountAnimals);
+        m_viewList.append( new View("Simulación pasto Guinea", this, GUINEA));
+        m_viewList.at(2)->view()->setCacheMode(QGraphicsView::CacheBackground);
+        m_viewList.at(2)->view()->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+        m_viewList.at(2)->view()->setDragMode(QGraphicsView::ScrollHandDrag);
+        m_viewList.at(2)->view()->setBackgroundBrush(QPixmap(":/images/panicum_guinea.png"));
+        m_viewList.at(2)->setIntervalForStep(1000);
+        m_viewList.at(2)->setIntervalForRain(m_rainInterval);
+        m_viewList.at(2)->setSpeed(previousView->getSpeed());
+        m_viewList.at(2)->populateScene(m_amountSquares, m_amountAnimals);
 
 
-        this->layout()->addWidget(view);
+        this->layout()->addWidget(m_viewList.at(2));
 
-        connect(view, SIGNAL(simulationFinished()), this, SLOT(onLastSimulationFinished()));
+        connect(m_viewList.at(2), SIGNAL(simulationFinished()), this, SLOT(onLastSimulationFinished()));
 
     }
 
@@ -121,9 +124,12 @@ void MainWindow::onSimulationFinished()
 
 void MainWindow::onLastSimulationFinished()
 {
-    DialogResults dialogResults;
+    DialogResults dialogResults(&m_viewList);
 
     dialogResults.setWindowState(dialogResults.windowState() | Qt::WindowMaximized);
-    dialogResults.exec();
 
+
+    dialogResults.exec();
+    setMustClose(true);
+    this->close();
 }

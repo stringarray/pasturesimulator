@@ -6,12 +6,18 @@
 
 QT_BEGIN_NAMESPACE
 class QGraphicsScene;
+class View;
 QT_END_NAMESPACE
+
+enum tipoPasto {CARIMAGUA, ALEMAN, GUINEA};
+
 
 class MainWindow : public QWidget
 {
     Q_OBJECT
+
 public:
+
      MainWindow(QWidget *parent = 0);
      ~MainWindow();
 
@@ -33,6 +39,7 @@ private:
      int m_amountSquares;
      int m_rainInterval;
      int m_speed;
+     QList<View*> m_viewList;
 
 };
 

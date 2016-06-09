@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>653</width>
+    <width>701</width>
     <height>503</height>
    </rect>
   </property>
@@ -74,7 +74,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Andropogon gayanus (carimagua)</string>
+    <string>Andropogon Gayanus (Carimagua)</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
@@ -87,7 +87,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Echinochloa (aleman)</string>
+    <string>Echinochloa Polystachya (Aleman)</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_5">
@@ -100,7 +100,58 @@
     </rect>
    </property>
    <property name="text">
-    <string>Panicum máximum (guinea)</string>
+    <string>Panicum Máximum (Guinea)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="link_carimagua">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>30</y>
+     <width>441</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>link carimagua</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::AutoText</enum>
+   </property>
+   <property name="openExternalLinks">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="link_echinochloa">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>180</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+   <property name="openExternalLinks">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="link_panicum">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>340</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+   <property name="openExternalLinks">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>
